@@ -1,63 +1,42 @@
 # Contract Review Risk Agent MVP
 
-一个可运行、可扩展、可测试的合同审查风险 Agent 最小版本。
+涓€涓彲杩愯銆佸彲鎵╁睍銆佸彲娴嬭瘯鐨勫悎鍚屽鏌ラ闄?Agent 鏈€灏忕増鏈€?
+褰撳墠鐗堟湰鐩爣锛?
+- 鏀寔涓婁紶 `PDF / DOCX / TXT / 鍥剧墖`
+- 鎶藉彇鍚堝悓鏂囨湰骞跺垏鍒嗘潯娆?- 浣跨敤鈥滆鍒?+ Prompt 妯℃澘鈥濊瘑鍒珮椋庨櫓鏉℃
+- 杈撳嚭缁撴瀯鍖?JSON
+- 淇濆瓨鍘嗗彶瀹℃煡璁板綍
 
-当前版本目标：
-
-- 支持上传 `PDF / DOCX / TXT / 图片`
-- 抽取合同文本并切分条款
-- 使用“规则 + Prompt 模板”识别高风险条款
-- 输出结构化 JSON
-- 保存历史审查记录
-
-当前不做复杂 RAG，只保留清晰扩展接口。
-
-## 当前目录
+褰撳墠涓嶅仛澶嶆潅 RAG锛屽彧淇濈暀娓呮櫚鎵╁睍鎺ュ彛銆?
+## 褰撳墠鐩綍
 
 ```text
 contract_review_agent/
-├── api/                # FastAPI 应用与路由
-├── core/               # 配置与依赖装配
-├── docs/               # 架构说明、样例合同、Postman collection
-├── models/             # 领域模型
-├── repositories/       # 数据访问层
-├── schemas/            # API 输入输出模型
-├── services/           # 解析、切分、分析、存储
-├── static/             # 最小前端页面
-├── tests/              # 单元测试与接口测试
-├── data/               # 运行期 SQLite 数据
-├── .env.example        # 环境变量模板
-├── pytest.ini          # pytest 配置
-├── main.py             # 兼容入口
-├── requirements.txt
-└── README.md
+鈹溾攢鈹€ api/                # FastAPI 搴旂敤涓庤矾鐢?鈹溾攢鈹€ core/               # 閰嶇疆涓庝緷璧栬閰?鈹溾攢鈹€ docs/               # 鏋舵瀯璇存槑銆佹牱渚嬪悎鍚屻€丳ostman collection
+鈹溾攢鈹€ models/             # 棰嗗煙妯″瀷
+鈹溾攢鈹€ repositories/       # 鏁版嵁璁块棶灞?鈹溾攢鈹€ schemas/            # API 杈撳叆杈撳嚭妯″瀷
+鈹溾攢鈹€ services/           # 瑙ｆ瀽銆佸垏鍒嗐€佸垎鏋愩€佸瓨鍌?鈹溾攢鈹€ static/             # 鏈€灏忓墠绔〉闈?鈹溾攢鈹€ tests/              # 鍗曞厓娴嬭瘯涓庢帴鍙ｆ祴璇?鈹溾攢鈹€ data/               # 杩愯鏈?SQLite 鏁版嵁
+鈹溾攢鈹€ .env.example        # 鐜鍙橀噺妯℃澘
+鈹溾攢鈹€ pytest.ini          # pytest 閰嶇疆
+鈹溾攢鈹€ main.py             # 鍏煎鍏ュ彛
+鈹溾攢鈹€ requirements.txt
+鈹斺攢鈹€ README.md
 ```
 
-## 架构分层
+## 鏋舵瀯鍒嗗眰
 
 - `api/`
-  暴露 REST API，不承载业务逻辑。
-- `core/`
-  管理配置和依赖注入。
-- `models/`
-  定义 `Clause`、`ParsedDocument`、`RiskAnalysis`、`Review` 等领域对象。
-- `schemas/`
-  定义 Pydantic 请求响应模型。
-- `services/parsers/`
-  负责不同文件类型的文本抽取。
-- `services/splitters/`
-  负责合同条款切分。
-- `services/analyzers/`
-  负责规则识别、法律知识获取、风险分析编排。
-- `services/llm/`
-  当前使用模板化结构输出，后续可替换成真实 LLM Provider。
-- `services/storage/`
-  提供 SQLite 初始化。
-- `repositories/`
-  负责审查记录持久化与查询。
-
-## 已实现风险类型
-
+  鏆撮湶 REST API锛屼笉鎵胯浇涓氬姟閫昏緫銆?- `core/`
+  绠＄悊閰嶇疆鍜屼緷璧栨敞鍏ャ€?- `models/`
+  瀹氫箟 `Clause`銆乣ParsedDocument`銆乣RiskAnalysis`銆乣Review` 绛夐鍩熷璞°€?- `schemas/`
+  瀹氫箟 Pydantic 璇锋眰鍝嶅簲妯″瀷銆?- `services/parsers/`
+  璐熻矗涓嶅悓鏂囦欢绫诲瀷鐨勬枃鏈娊鍙栥€?- `services/splitters/`
+  璐熻矗鍚堝悓鏉℃鍒囧垎銆?- `services/analyzers/`
+  璐熻矗瑙勫垯璇嗗埆銆佹硶寰嬬煡璇嗚幏鍙栥€侀闄╁垎鏋愮紪鎺掋€?- `services/llm/`
+  褰撳墠浣跨敤妯℃澘鍖栫粨鏋勮緭鍑猴紝鍚庣画鍙浛鎹㈡垚鐪熷疄 LLM Provider銆?- `services/storage/`
+  鎻愪緵 SQLite 鍒濆鍖栥€?- `repositories/`
+  璐熻矗瀹℃煡璁板綍鎸佷箙鍖栦笌鏌ヨ銆?
+## 宸插疄鐜伴闄╃被鍨?
 - `unilateral_exemption`
 - `unilateral_termination`
 - `excessive_liquidated_damages`
@@ -65,7 +44,7 @@ contract_review_agent/
 - `one_sided_ip_assignment`
 - `biased_dispute_resolution`
 
-风险等级严格限定为：
+椋庨櫓绛夌骇涓ユ牸闄愬畾涓猴細
 
 - `high`
 - `medium`
@@ -75,43 +54,36 @@ contract_review_agent/
 
 ### `POST /api/review/upload`
 
-上传合同文件并返回结构化审查结果。
-
-请求类型：
-
+涓婁紶鍚堝悓鏂囦欢骞惰繑鍥炵粨鏋勫寲瀹℃煡缁撴灉銆?
+璇锋眰绫诲瀷锛?
 - `multipart/form-data`
 
-字段：
-
+瀛楁锛?
 - `file`
 
 ### `POST /api/review/analyze`
 
-直接提交合同文本。
-
-请求体：
+鐩存帴鎻愪氦鍚堝悓鏂囨湰銆?
+璇锋眰浣擄細
 
 ```json
 {
   "document_name": "sample_contract.txt",
-  "text": "合同文本内容"
+  "text": "鍚堝悓鏂囨湰鍐呭"
 }
 ```
 
 ### `GET /api/review/{review_id}`
 
-获取单条历史审查记录。
-
+鑾峰彇鍗曟潯鍘嗗彶瀹℃煡璁板綍銆?
 ### `GET /api/reviews`
 
-获取历史审查列表。
-
-支持参数：
-
+鑾峰彇鍘嗗彶瀹℃煡鍒楄〃銆?
+鏀寔鍙傛暟锛?
 - `limit`
 - `offset`
 
-## 返回结构
+## 杩斿洖缁撴瀯
 
 ```json
 {
@@ -123,7 +95,7 @@ contract_review_agent/
   "risks": [
     {
       "clause_id": "clause_1",
-      "clause_title": "第一条 付款安排",
+      "clause_title": "绗竴鏉?浠樻瀹夋帓",
       "clause_text": "......",
       "risk_type": "excessive_liquidated_damages",
       "risk_level": "high",
@@ -136,85 +108,72 @@ contract_review_agent/
 }
 ```
 
-## 运行方式
+## 杩愯鏂瑰紡
 
-安装依赖：
-
+瀹夎渚濊禆锛?
 ```bash
 pip install -r requirements.txt
 ```
 
-如果需要环境变量模板，可先复制：
-
+濡傛灉闇€瑕佺幆澧冨彉閲忔ā鏉匡紝鍙厛澶嶅埗锛?
 ```bash
 copy .env.example .env
 ```
 
-启动服务：
-
+鍚姩鏈嶅姟锛?
 ```bash
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-访问地址：
-
+璁块棶鍦板潃锛?
 - Swagger: `http://localhost:8000/docs`
-- 最小前端: `http://localhost:8000/`
+- 鏈€灏忓墠绔? `http://localhost:8000/`
 
-## OCR 说明
+## OCR 璇存槑
 
-如果需要解析图片合同，请安装 Tesseract OCR。
-
-Windows 可通过环境变量指定路径：
-
+濡傛灉闇€瑕佽В鏋愬浘鐗囧悎鍚岋紝璇峰畨瑁?Tesseract OCR銆?
+Windows 鍙€氳繃鐜鍙橀噺鎸囧畾璺緞锛?
 ```bash
 set CONTRACT_AGENT_TESSERACT_CMD=C:\Program Files\Tesseract-OCR\tesseract.exe
 ```
 
-## 测试
+## 娴嬭瘯
 
-运行全部测试：
-
+杩愯鍏ㄩ儴娴嬭瘯锛?
 ```bash
 pytest
 ```
 
-或：
+鎴栵細
 
 ```bash
 pytest -q
 ```
 
-当前已覆盖：
+褰撳墠宸茶鐩栵細
 
-- 正常文本分析
-- 正常文件上传
-- 历史记录查询
-- 空文本请求
-- 空文件上传
-- 不支持的文件类型
-- 查询不存在的记录
+- 姝ｅ父鏂囨湰鍒嗘瀽
+- 姝ｅ父鏂囦欢涓婁紶
+- 鍘嗗彶璁板綍鏌ヨ
+- 绌烘枃鏈姹?- 绌烘枃浠朵笂浼?- 涓嶆敮鎸佺殑鏂囦欢绫诲瀷
+- 鏌ヨ涓嶅瓨鍦ㄧ殑璁板綍
 
 ## Postman
 
-仓库已提供可直接导入的 collection：
-
+浠撳簱宸叉彁渚涘彲鐩存帴瀵煎叆鐨?collection锛?
 - `docs/postman_collection.json`
 
-推荐在 Postman 中配置：
+鎺ㄨ崘鍦?Postman 涓厤缃細
 
 - `base_url = http://localhost:8000`
-- `review_id` 由分析接口自动写入
+- `review_id` 鐢卞垎鏋愭帴鍙ｈ嚜鍔ㄥ啓鍏?
+## 鏍蜂緥鏁版嵁
 
-## 样例数据
+- 鏍蜂緥鍚堝悓锛歚docs/sample_contract.txt`
+- 鏋舵瀯璇存槑锛歚docs/architecture.md`
+- Postman collection锛歚docs/postman_collection.json`
 
-- 样例合同：`docs/sample_contract.txt`
-- 架构说明：`docs/architecture.md`
-- Postman collection：`docs/postman_collection.json`
+## 鍚庣画鎵╁睍
 
-## 后续扩展
-
-- 把 `TemplateLLMClient` 替换成真实模型调用
-- 把 `StaticLegalKnowledgeProvider` 升级成法规库/RAG 检索层
-- 增加主体识别、金额抽取、期限抽取
-- 增加 PostgreSQL 和对象存储支持
+- 鎶?`TemplateLLMClient` 鏇挎崲鎴愮湡瀹炴ā鍨嬭皟鐢?- 鎶?`StaticLegalKnowledgeProvider` 鍗囩骇鎴愭硶瑙勫簱/RAG 妫€绱㈠眰
+- 澧炲姞涓讳綋璇嗗埆銆侀噾棰濇娊鍙栥€佹湡闄愭娊鍙?- 澧炲姞 PostgreSQL 鍜屽璞″瓨鍌ㄦ敮鎸?
