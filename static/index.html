@@ -3,571 +3,201 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>合同审查风险Agent</title>
+    <title>Contract Review Risk Agent</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: "Microsoft YaHei", Arial, sans-serif; background: #f5f5f5; }
-        .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
-        h1 { text-align: center; color: #333; margin: 30px 0 20px; }
-        .nav { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
-        .nav-btn { background: #e0e0e0; border: none; padding: 12px 24px; border-radius: 8px; font-size: 15px; cursor: pointer; transition: all 0.2s; }
-        .nav-btn.active { background: #667eea; color: white; }
-        .nav-btn:hover:not(.active) { background: #d0d0d0; }
-        .card { background: white; border-radius: 10px; padding: 25px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-
-        /* 上传和文本审查 */
-        .upload-box { border: 2px dashed #ccc; border-radius: 10px; padding: 40px; text-align: center; cursor: pointer; }
-        .upload-box:hover { border-color: #667eea; }
-        .upload-icon { font-size: 50px; margin-bottom: 10px; }
-        textarea { width: 100%; height: 200px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; resize: vertical; font-family: inherit; }
-        button { background: #667eea; color: white; border: none; padding: 12px 30px; border-radius: 8px; font-size: 16px; cursor: pointer; }
-        button:hover { background: #5a6fd6; }
-        button:disabled { background: #ccc; cursor: not-allowed; }
-        button.secondary { background: #6c757d; }
-        button.secondary:hover { background: #5a6268; }
-        button.success { background: #28a745; }
-        button.success:hover { background: #218838; }
-        .btn-group { margin-top: 15px; text-align: center; }
-        .btn-group-left { text-align: left; }
-
-        /* 结果展示 */
-        .rating { display: inline-block; padding: 8px 20px; border-radius: 20px; font-weight: bold; margin-bottom: 20px; }
-        .rating.good { background: #d4edda; color: #155724; }
-        .rating.warn { background: #fff3cd; color: #856404; }
-        .rating.bad { background: #f8d7da; color: #721c24; }
-        .stats { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
-        .stat { flex: 1; min-width: 120px; text-align: center; padding: 15px; border-radius: 8px; }
-        .stat.red { background: #fff5f5; }
-        .stat.yellow { background: #fffbeb; }
-        .stat.green { background: #f0fdf4; }
-        .stat.blue { background: #e7f3ff; }
-        .stat-num { font-size: 28px; font-weight: bold; }
-        .stat.red .stat-num { color: #dc3545; }
-        .stat.yellow .stat-num { color: #ffc107; }
-        .stat.green .stat-num { color: #28a745; }
-        .stat.blue .stat-num { color: #007bff; }
-        .stat-label { color: #666; font-size: 14px; }
-        .risk-item { border-left: 4px solid #ddd; padding: 15px; margin-bottom: 15px; background: #fafafa; border-radius: 0 8px 8px 0; }
-        .risk-item.red { border-color: #dc3545; }
-        .risk-item.yellow { border-color: #ffc107; }
-        .risk-item.green { border-color: #28a745; }
-        .risk-title { font-weight: bold; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
-        .risk-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 12px; color: white; }
-        .risk-badge.red { background: #dc3545; }
-        .risk-badge.yellow { background: #ffc107; color: #333; }
-        .risk-badge.green { background: #28a745; }
-        .risk-desc { color: #666; font-size: 14px; line-height: 1.6; margin-bottom: 8px; }
-        .risk-text { background: #f0f0f0; padding: 10px; border-radius: 6px; font-size: 13px; color: #555; margin-bottom: 8px; word-break: break-all; }
-        .suggestion { background: #e8f4e8; padding: 12px; border-radius: 6px; font-size: 13px; margin-top: 8px; }
-        .suggestion-title { font-weight: bold; color: #28a745; margin-bottom: 5px; }
-
-        /* 历史记录 */
-        .search-box { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-        .search-box input { flex: 1; min-width: 200px; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
-        .history-list { display: flex; flex-direction: column; gap: 10px; }
-        .history-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #fafafa; border-radius: 8px; cursor: pointer; transition: background 0.2s; }
-        .history-item:hover { background: #f0f0f0; }
-        .history-info { flex: 1; }
-        .history-name { font-weight: bold; margin-bottom: 5px; }
-        .history-meta { font-size: 12px; color: #999; display: flex; gap: 15px; }
-        .history-rating { padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: bold; }
-        .history-rating.good { background: #d4edda; color: #155724; }
-        .history-rating.warn { background: #fff3cd; color: #856404; }
-        .history-rating.bad { background: #f8d7da; color: #721c24; }
-
-        /* 详情页 */
-        .detail-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #eee; }
-        .back-btn { background: #6c757d; padding: 8px 16px; font-size: 14px; }
-        .detail-actions { display: flex; gap: 10px; }
-
-        /* 统计页 */
-        .stat-card { text-align: center; padding: 30px; }
-        .stat-card .big-num { font-size: 48px; font-weight: bold; color: #667eea; }
-        .stat-card .label { color: #666; margin-top: 10px; }
-        .chart-placeholder { height: 200px; display: flex; align-items: center; justify-content: center; color: #999; }
-
-        /* 通用 */
-        .error { color: #dc3545; background: #f8d7da; padding: 10px; border-radius: 6px; margin-top: 10px; display: none; }
-        .loading { text-align: center; padding: 40px; display: none; }
-        .spinner { width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #667eea; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 15px; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .empty { text-align: center; padding: 40px; color: #999; }
-        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
-        .modal.active { display: flex; }
-        .modal-content { background: white; border-radius: 10px; padding: 30px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; }
-        .modal-header { display: flex; justify-content: space-between; margin-bottom: 20px; }
-        .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: #999; }
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            margin: 0;
+            background: #f4f6f8;
+            color: #1f2937;
+        }
+        .page {
+            max-width: 1080px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+        }
+        h1, h2 {
+            margin-top: 0;
+        }
+        textarea, input[type="file"] {
+            width: 100%;
+            margin-top: 12px;
+        }
+        textarea {
+            min-height: 220px;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            resize: vertical;
+        }
+        button {
+            margin-top: 12px;
+            margin-right: 12px;
+            padding: 10px 18px;
+            border: none;
+            border-radius: 8px;
+            background: #0f172a;
+            color: #fff;
+            cursor: pointer;
+        }
+        button.secondary {
+            background: #475569;
+        }
+        pre {
+            white-space: pre-wrap;
+            word-break: break-word;
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 16px;
+            border-radius: 10px;
+            overflow-x: auto;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        .muted {
+            color: #64748b;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>合同审查风险Agent</h1>
-
-        <div class="nav">
-            <button class="nav-btn active" onclick="showPage('review')">合同审查</button>
-            <button class="nav-btn" onclick="showPage('history')">历史记录</button>
-            <button class="nav-btn" onclick="showPage('statistics')">统计数据</button>
+    <div class="page">
+        <div class="card">
+            <h1>合同审查风险 Agent MVP</h1>
+            <div class="muted">后端接口：/api/review/upload /api/review/analyze /api/review/{review_id} /api/reviews</div>
         </div>
 
-        <!-- 合同审查页 -->
-        <div id="page-review" class="tab-content active">
-            <div class="card">
-                <div class="tabs" style="margin-bottom: 20px;">
-                    <button class="nav-btn active" onclick="showTab('upload')" style="padding: 8px 16px; font-size: 14px;">文件审查</button>
-                    <button class="nav-btn" onclick="showTab('text')" style="padding: 8px 16px; font-size: 14px;">文本审查</button>
-                </div>
-
-                <div id="tab-upload" class="tab-content active">
-                    <div class="upload-box" onclick="document.getElementById('file').click()">
-                        <div class="upload-icon">📄</div>
-                        <div>点击选择文件</div>
-                        <div style="color:#999;font-size:12px;margin-top:5px;">支持 PDF、Word、图片</div>
-                    </div>
-                    <input type="file" id="file" style="display:none" accept=".pdf,.docx,.doc,.png,.jpg,.jpeg,.bmp" onchange="fileSelected(this)">
-                    <div id="fileName" style="text-align:center;margin-top:10px;color:#666;"></div>
-                    <div class="btn-group">
-                        <button id="btnReview" onclick="reviewFile()" disabled>开始审查</button>
-                    </div>
-                </div>
-
-                <div id="tab-text" class="tab-content">
-                    <textarea id="contractText" placeholder="请粘贴合同文本内容..."></textarea>
-                    <div class="btn-group">
-                        <button onclick="reviewText()">开始审查</button>
-                    </div>
-                </div>
-
-                <div id="error" class="error"></div>
-            </div>
-
-            <div class="card loading" id="loading">
-                <div class="spinner"></div>
-                <div>正在分析合同，请稍候...</div>
-            </div>
-
-            <div class="card result" id="result">
-                <div style="text-align:center;">
-                    <span class="rating" id="rating"></span>
-                </div>
-
-                <div class="stats">
-                    <div class="stat red">
-                        <div class="stat-num" id="statRed">0</div>
-                        <div class="stat-label">重大风险</div>
-                    </div>
-                    <div class="stat yellow">
-                        <div class="stat-num" id="statYellow">0</div>
-                        <div class="stat-label">中等风险</div>
-                    </div>
-                    <div class="stat green">
-                        <div class="stat-num" id="statGreen">0</div>
-                        <div class="stat-label">建议优化</div>
-                    </div>
-                </div>
-
-                <h3 style="margin-bottom:15px;">风险详情</h3>
-                <div id="riskList"></div>
-
-                <div class="btn-group">
-                    <button onclick="location.reload()">继续审查新合同</button>
-                </div>
+        <div class="card">
+            <h2>文本分析</h2>
+            <textarea id="contractText" placeholder="粘贴合同文本"></textarea>
+            <div>
+                <button onclick="analyzeText()">提交分析</button>
+                <button class="secondary" onclick="loadSample()">加载样例文本</button>
             </div>
         </div>
 
-        <!-- 历史记录页 -->
-        <div id="page-history" class="tab-content">
-            <div class="card">
-                <div class="search-box">
-                    <input type="text" id="searchInput" placeholder="搜索合同名称..." onkeyup="handleSearch(event)">
-                    <button onclick="doSearch()" class="secondary">搜索</button>
-                    <button onclick="loadHistory()" class="secondary">刷新</button>
-                </div>
-                <div id="historyList" class="history-list"></div>
-                <div id="historyEmpty" class="empty" style="display:none;">暂无历史记录</div>
-            </div>
-
-            <!-- 历史详情 -->
-            <div class="card" id="historyDetail" style="display:none;">
-                <div class="detail-header">
-                    <h2 id="detailTitle">合同详情</h2>
-                    <div class="detail-actions">
-                        <button class="success" onclick="downloadReport('markdown')">下载MD报告</button>
-                        <button class="success secondary" onclick="downloadReport('html')">下载HTML报告</button>
-                        <button class="back-btn" onclick="hideDetail()">返回列表</button>
-                    </div>
-                </div>
-
-                <div style="text-align:center;">
-                    <span class="rating" id="detailRating"></span>
-                </div>
-
-                <div class="stats">
-                    <div class="stat red">
-                        <div class="stat-num" id="detailRed">0</div>
-                        <div class="stat-label">重大风险</div>
-                    </div>
-                    <div class="stat yellow">
-                        <div class="stat-num" id="detailYellow">0</div>
-                        <div class="stat-label">中等风险</div>
-                    </div>
-                    <div class="stat green">
-                        <div class="stat-num" id="detailGreen">0</div>
-                        <div class="stat-label">建议优化</div>
-                    </div>
-                </div>
-
-                <h3 style="margin-bottom:15px;">风险详情</h3>
-                <div id="detailRiskList"></div>
+        <div class="card">
+            <h2>文件上传分析</h2>
+            <input id="fileInput" type="file" />
+            <div>
+                <button onclick="uploadFile()">上传并分析</button>
             </div>
         </div>
 
-        <!-- 统计数据页 -->
-        <div id="page-statistics" class="tab-content">
-            <div class="card">
-                <h3 style="margin-bottom:20px;">总体统计</h3>
-                <div class="stats">
-                    <div class="stat blue">
-                        <div class="stat-num" id="totalReviews">0</div>
-                        <div class="stat-label">总审查数</div>
-                    </div>
-                    <div class="stat red">
-                        <div class="stat-num" id="totalRed">0</div>
-                        <div class="stat-label">重大风险</div>
-                    </div>
-                    <div class="stat yellow">
-                        <div class="stat-num" id="totalYellow">0</div>
-                        <div class="stat-label">中等风险</div>
-                    </div>
-                    <div class="stat green">
-                        <div class="stat-num" id="totalGreen">0</div>
-                        <div class="stat-label">建议优化</div>
-                    </div>
-                </div>
-            </div>
+        <div class="card">
+            <h2>历史记录</h2>
+            <button class="secondary" onclick="loadReviews()">刷新历史</button>
+            <ul id="reviewList"></ul>
+        </div>
 
-            <div class="card">
-                <h3 style="margin-bottom:20px;">风险类型分布</h3>
-                <div id="riskDistribution" class="history-list"></div>
-            </div>
+        <div class="card">
+            <h2>结果</h2>
+            <pre id="result">等待分析结果...</pre>
         </div>
     </div>
 
     <script>
-        const API = 'http://localhost:8000';
-        let selectedFile = null;
-        let currentRecordId = null;
-        let lastHistory = [];
+        const sampleText = `软件开发服务合同
 
-        // 页面导航
-        function showPage(page) {
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+第一条 服务内容
+乙方负责为甲方开发内部管理系统，并根据甲方要求完成部署与培训。
 
-            if (page === 'review') {
-                document.querySelectorAll('.nav-btn')[0].classList.add('active');
-                document.getElementById('page-review').classList.add('active');
-            } else if (page === 'history') {
-                document.querySelectorAll('.nav-btn')[1].classList.add('active');
-                document.getElementById('page-history').classList.add('active');
-                loadHistory();
-            } else if (page === 'statistics') {
-                document.querySelectorAll('.nav-btn')[2].classList.add('active');
-                document.getElementById('page-statistics').classList.add('active');
-                loadStatistics();
-            }
+第二条 付款安排
+甲方应在合同签订后三个工作日内支付全部预付款。如甲方逾期付款，每逾期一日，按合同总金额的 5% 向乙方支付滞纳金。
+
+第三条 免责条款
+如甲方认为项目延期或交付结果不符合预期，乙方无需承担任何责任。
+
+第四条 单方解除
+甲方有权在任何时候单方解除本合同，且无需说明理由，乙方应无条件配合。
+
+第五条 知识产权
+乙方在履行本合同过程中形成的全部软件代码、文档、模型、接口及相关知识产权永久归甲方所有。
+
+第六条 争议解决
+因本合同引起的任何争议，仅可向甲方所在地人民法院提起诉讼。`;
+
+        function setResult(data) {
+            document.getElementById("result").textContent = JSON.stringify(data, null, 2);
         }
 
-        // Tab切换
-        function showTab(tab) {
-            document.querySelectorAll('#page-review .nav-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('#page-review .tab-content').forEach(c => c.classList.remove('active'));
-            if (tab === 'upload') {
-                document.querySelectorAll('#page-review .nav-btn')[0].classList.add('active');
-                document.getElementById('tab-upload').classList.add('active');
-            } else {
-                document.querySelectorAll('#page-review .nav-btn')[1].classList.add('active');
-                document.getElementById('tab-text').classList.add('active');
-            }
+        function loadSample() {
+            document.getElementById("contractText").value = sampleText;
         }
 
-        // 文件选择
-        function fileSelected(input) {
-            if (input.files.length > 0) {
-                selectedFile = input.files[0];
-                document.getElementById('fileName').textContent = selectedFile.name;
-                document.getElementById('btnReview').disabled = false;
-            }
-        }
-
-        // 文件审查
-        async function reviewFile() {
-            if (!selectedFile) return;
-            showLoading(true);
-            hideError();
-
-            const formData = new FormData();
-            formData.append('file', selectedFile);
-
-            try {
-                const res = await fetch(API + '/review', { method: 'POST', body: formData });
-                if (!res.ok) throw new Error('审查失败');
-                const data = await res.json();
-                showResult(data);
-            } catch (e) {
-                showError('审查失败: ' + e.message);
-            } finally {
-                showLoading(false);
-            }
-        }
-
-        // 文本审查
-        async function reviewText() {
-            const text = document.getElementById('contractText').value.trim();
-            if (!text) { showError('请输入合同文本'); return; }
-            showLoading(true);
-            hideError();
-
-            try {
-                const res = await fetch(API + '/review/text', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ file_name: '合同.txt', text: text, file_type: 'txt' })
-                });
-                if (!res.ok) throw new Error('审查失败');
-                const data = await res.json();
-                showResult(data);
-            } catch (e) {
-                showError('审查失败: ' + e.message);
-            } finally {
-                showLoading(false);
-            }
-        }
-
-        // 历史记录
-        async function loadHistory() {
-            try {
-                const res = await fetch(API + '/history?limit=50');
-                const data = await res.json();
-                lastHistory = data.records || [];
-                renderHistory(lastHistory);
-            } catch (e) {
-                console.error('加载历史失败:', e);
-            }
-        }
-
-        async function doSearch() {
-            const q = document.getElementById('searchInput').value.trim();
-            if (!q) { loadHistory(); return; }
-
-            try {
-                const res = await fetch(API + '/history/search?q=' + encodeURIComponent(q));
-                const data = await res.json();
-                lastHistory = data.records || [];
-                renderHistory(lastHistory);
-            } catch (e) {
-                console.error('搜索失败:', e);
-            }
-        }
-
-        function handleSearch(event) {
-            if (event.key === 'Enter') doSearch();
-        }
-
-        function renderHistory(records) {
-            const list = document.getElementById('historyList');
-            const empty = document.getElementById('historyEmpty');
-
-            if (!records || records.length === 0) {
-                list.style.display = 'none';
-                empty.style.display = 'block';
+        async function analyzeText() {
+            const text = document.getElementById("contractText").value.trim();
+            if (!text) {
+                alert("请输入合同文本");
                 return;
             }
 
-            list.style.display = 'flex';
-            empty.style.display = 'none';
+            const response = await fetch("/api/review/analyze", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    document_name: "sample_contract.txt",
+                    text: text
+                })
+            });
+            const data = await response.json();
+            setResult(data);
+            loadReviews();
+        }
 
-            list.innerHTML = records.map(r => {
-                const ratingClass = r.overall_rating.includes('建议签') ? 'good' :
-                                   r.overall_rating.includes('修改后') ? 'warn' : 'bad';
-                const date = new Date(r.created_at).toLocaleString('zh-CN');
-                const summary = r.risk_summary || {};
-                return `
-                    <div class="history-item" onclick="showHistoryDetail(${r.id})">
-                        <div class="history-info">
-                            <div class="history-name">${escapeHtml(r.file_name)}</div>
-                            <div class="history-meta">
-                                <span>${date}</span>
-                                <span>重大:${summary.red || 0} 中等:${summary.yellow || 0} 优化:${summary.green || 0}</span>
-                            </div>
-                        </div>
-                        <span class="history-rating ${ratingClass}">${r.overall_rating}</span>
-                    </div>
+        async function uploadFile() {
+            const input = document.getElementById("fileInput");
+            if (!input.files.length) {
+                alert("请选择文件");
+                return;
+            }
+
+            const form = new FormData();
+            form.append("file", input.files[0]);
+
+            const response = await fetch("/api/review/upload", {
+                method: "POST",
+                body: form
+            });
+            const data = await response.json();
+            setResult(data);
+            loadReviews();
+        }
+
+        async function loadReviews() {
+            const response = await fetch("/api/reviews");
+            const data = await response.json();
+            const list = document.getElementById("reviewList");
+            list.innerHTML = "";
+
+            for (const item of data.items || []) {
+                const entry = document.createElement("li");
+                entry.innerHTML = `
+                    <strong>${item.document_name}</strong>
+                    <span class="muted"> (${item.created_at}) </span>
+                    <button class="secondary" data-id="${item.review_id}">查看详情</button>
                 `;
-            }).join('');
-        }
-
-        async function showHistoryDetail(id) {
-            try {
-                const res = await fetch(API + '/history/' + id);
-                const r = await res.json();
-                currentRecordId = id;
-
-                document.getElementById('detailTitle').textContent = r.file_name;
-
-                const ratingClass = r.overall_rating.includes('建议签') ? 'good' :
-                                   r.overall_rating.includes('修改后') ? 'warn' : 'bad';
-                const rating = document.getElementById('detailRating');
-                rating.textContent = r.overall_rating;
-                rating.className = 'rating ' + ratingClass;
-
-                const summary = r.risk_summary || {};
-                document.getElementById('detailRed').textContent = summary.red || 0;
-                document.getElementById('detailYellow').textContent = summary.yellow || 0;
-                document.getElementById('detailGreen').textContent = summary.green || 0;
-
-                const risks = r.risks_detail || [];
-                document.getElementById('detailRiskList').innerHTML = risks.map(risk => {
-                    const levelClass = risk.level === 'red' ? 'red' : risk.level === 'yellow' ? 'yellow' : 'green';
-                    const levelText = risk.level === 'red' ? '重大风险' : risk.level === 'yellow' ? '中等风险' : '建议优化';
-                    return `
-                        <div class="risk-item ${levelClass}">
-                            <div class="risk-title">
-                                <span class="risk-badge ${levelClass}">${levelText}</span>
-                                ${risk.risk_type}
-                            </div>
-                            <div class="risk-desc">${risk.description}</div>
-                            <div class="risk-text">${escapeHtml(risk.clause_text.substring(0, 200))}</div>
-                        </div>
-                    `;
-                }).join('') || '<div class="empty">无风险详情</div>';
-
-                document.getElementById('historyList').parentElement.style.display = 'none';
-                document.getElementById('historyDetail').style.display = 'block';
-            } catch (e) {
-                console.error('加载详情失败:', e);
+                entry.querySelector("button").addEventListener("click", async () => {
+                    const detailResponse = await fetch("/api/review/" + item.review_id);
+                    const detail = await detailResponse.json();
+                    setResult(detail);
+                });
+                list.appendChild(entry);
             }
         }
 
-        function hideDetail() {
-            document.getElementById('historyDetail').style.display = 'none';
-            document.getElementById('historyList').parentElement.style.display = 'block';
-            currentRecordId = null;
-        }
-
-        async function downloadReport(format) {
-            if (!currentRecordId) return;
-            try {
-                const res = await fetch(API + '/report/' + currentRecordId + '?format=' + format);
-                if (!res.ok) throw new Error('下载失败');
-                const blob = await res.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = '合同审查报告.' + format;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                window.URL.revokeObjectURL(url);
-            } catch (e) {
-                console.error('下载失败:', e);
-                alert('下载失败: ' + e.message);
-            }
-        }
-
-        // 统计数据
-        async function loadStatistics() {
-            try {
-                const res = await fetch(API + '/statistics');
-                const data = await res.json();
-
-                document.getElementById('totalReviews').textContent = data.total_reviews || 0;
-
-                const distribution = data.risk_distribution || {};
-                document.getElementById('totalRed').textContent = distribution.red || 0;
-                document.getElementById('totalYellow').textContent = distribution.yellow || 0;
-                document.getElementById('totalGreen').textContent = distribution.green || 0;
-
-                // 风险类型分布
-                const riskTypes = data.risk_types || [];
-                const distList = document.getElementById('riskDistribution');
-                if (riskTypes.length > 0) {
-                    distList.innerHTML = riskTypes.map(item => `
-                        <div class="history-item">
-                            <div class="history-info">
-                                <div class="history-name">${item.risk_type}</div>
-                            </div>
-                            <span class="history-rating">${item.count}次</span>
-                        </div>
-                    `).join('');
-                } else {
-                    distList.innerHTML = '<div class="empty">暂无数据</div>';
-                }
-            } catch (e) {
-                console.error('加载统计失败:', e);
-            }
-        }
-
-        // 工具函数
-        function showLoading(show) {
-            document.getElementById('loading').style.display = show ? 'block' : 'none';
-            document.getElementById('result').style.display = 'none';
-        }
-
-        function showError(msg) {
-            const el = document.getElementById('error');
-            el.textContent = msg;
-            el.style.display = 'block';
-        }
-
-        function hideError() {
-            document.getElementById('error').style.display = 'none';
-        }
-
-        function showResult(data) {
-            const rating = document.getElementById('rating');
-            rating.textContent = data.overall_rating;
-            rating.className = 'rating';
-            if (data.overall_rating.includes('建议签')) rating.classList.add('good');
-            else if (data.overall_rating.includes('修改后')) rating.classList.add('warn');
-            else rating.classList.add('bad');
-
-            document.getElementById('statRed').textContent = data.summary.red || 0;
-            document.getElementById('statYellow').textContent = data.summary.yellow || 0;
-            document.getElementById('statGreen').textContent = data.summary.green || 0;
-
-            const list = document.getElementById('riskList');
-            if (data.risks && data.risks.length > 0) {
-                list.innerHTML = data.risks.map(r => {
-                    const levelClass = r.level;
-                    const levelText = r.level === 'red' ? '重大风险' : r.level === 'yellow' ? '中等风险' : '建议优化';
-                    let html = `
-                        <div class="risk-item ${levelClass}">
-                            <div class="risk-title">
-                                <span class="risk-badge ${levelClass}">${levelText}</span>
-                                ${r.risk_type}
-                            </div>
-                            <div class="risk-desc">${r.description}</div>
-                            <div class="risk-text">${escapeHtml(r.clause_text.substring(0, 150))}...</div>
-                    `;
-                    if (r.legal_basis) {
-                        html += `<div style="font-size:12px;color:#888;margin-top:5px;">法律依据: ${escapeHtml(r.legal_basis.substring(0, 100))}...</div>`;
-                    }
-                    html += '</div>';
-                    return html;
-                }).join('');
-            } else {
-                list.innerHTML = '<div class="empty">未发现明显风险</div>';
-            }
-
-            document.getElementById('result').style.display = 'block';
-        }
-
-        function escapeHtml(text) {
-            if (!text) return '';
-            return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-        }
+        loadReviews();
     </script>
 </body>
 </html>

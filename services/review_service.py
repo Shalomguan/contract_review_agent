@@ -1,0 +1,115 @@
+"""Orchestration service for contract review workflows."""
+from __future__ import annotations
+
+from collections import Counter
+from datetime import datetime, timezone
+from pathlib import Path
+from uuid import uuid4
+
+from core.config import Settings
+from models.review import ParsedDocument, Review
+from repositories.review_repository import ReviewRepository
+from services.analyzers.risk_analyzer import RiskAnalyzer
+from services.parsers.base import DocumentParseError
+from services.parsers.factory import DocumentParserFactory
+from services.splitters.contract_splitter import ContractSplitter
+
+
+class ReviewService:
+    """Coordinates parsing, clause splitting, analysis, and persistence."""
+
+    def __init__(
+        self,
+        settings: Settings,
+        parser_factory: DocumentParserFactory,
+        splitter: ContractSplitter,
+        risk_analyzer: RiskAnalyzer,
+        review_repository: ReviewRepository,
+    ) -> None:
+        self.settings = settings
+        self.parser_factory = parser_factory
+        self.splitter = splitter
+        self.risk_analyzer = risk_analyzer
+        self.review_repository = review_repository
+
+    def analyze_upload(self, filename: str, content: bytes) -> Review:
+        """Analyze an uploaded contract file."""
+        parser_result = self.parser_factory.parse(filename=filename, content=content)
+        self._persist_upload(filename=filename, content=content)
+        return self._analyze_document(
+            document_name=filename,
+            text=parser_result.text,
+            content_type=parser_result.content_type,
+            metadata=parser_result.metadata,
+        )
+
+    def analyze_text(self, document_name: str, text: str) -> Review:
+        """Analyze contract text submitted directly by API callers."""
+        return self._analyze_document(
+            document_name=document_name,
+            text=text,
+            content_type="text/plain",
+            metadata={},
+        )
+
+    def get_review(self, review_id: str) -> Review | None:
+        """Fetch a persisted review by ID."""
+        return self.review_repository.get(review_id)
+
+    def list_reviews(self, limit: int = 20, offset: int = 0):
+        """List persisted reviews for history pages."""
+        return self.review_repository.list(limit=limit, offset=offset)
+
+    def _analyze_document(
+        self,
+        document_name: str,
+        text: str,
+        content_type: str,
+        metadata: dict[str, str] | None = None,
+    ) -> Review:
+        normalized_text = text.strip()
+        if not normalized_text:
+            raise DocumentParseError("No text could be extracted from the document.")
+
+        document = ParsedDocument(
+            document_id=uuid4().hex,
+            document_name=document_name,
+            content_type=content_type,
+            text=normalized_text,
+            clauses=self.splitter.split(normalized_text),
+            metadata=metadata or {},
+        )
+
+        risks = self.risk_analyzer.analyze(document)
+        summary = self._build_summary(document=document, risk_count=len(risks), risks=risks)
+
+        review = Review(
+            review_id=uuid4().hex,
+            document_id=document.document_id,
+            document_name=document.document_name,
+            summary=summary,
+            risks=risks,
+            created_at=datetime.now(timezone.utc),
+        )
+        self.review_repository.save(review)
+        return review
+
+    def _persist_upload(self, filename: str, content: bytes) -> None:
+        """Store the original upload for traceability."""
+        target = self.settings.upload_dir / f"{uuid4().hex}_{Path(filename).name}"
+        target.write_bytes(content)
+
+    def _build_summary(self, document: ParsedDocument, risk_count: int, risks) -> str:
+        """Build a compact summary for list and detail views."""
+        counts = Counter(risk.risk_level for risk in risks)
+        if risk_count == 0:
+            return (
+                f"共拆分 {len(document.clauses)} 个条款，当前规则集未命中明显风险，"
+                "建议仍由法务人员进行复核。"
+            )
+
+        return (
+            f"共拆分 {len(document.clauses)} 个条款，识别出 {risk_count} 个风险点，"
+            f"其中 high {counts.get('high', 0)} 个、medium {counts.get('medium', 0)} 个、"
+            f"low {counts.get('low', 0)} 个。"
+        )

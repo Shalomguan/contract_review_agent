@@ -1,347 +1,189 @@
-# 合同审查风险Agent
+# Contract Review Risk Agent MVP
 
-基于大语言模型（MiniMax）的智能法律辅助工具，帮助企业法务人员、律师及中小企业主快速识别合同中的潜在风险点并生成修改建议。
+一个可运行、可扩展、可测试的合同审查风险 Agent 最小版本。
 
-## 功能特性
+当前版本目标很明确：
 
-### 核心功能
+- 支持上传 `PDF / DOCX / TXT / 图片`
+- 抽取合同文本并切分条款
+- 用“规则 + Prompt 模板”识别高风险条款
+- 输出结构化 JSON
+- 保存历史审查记录
 
-- **合同解析**：支持 PDF、Word、图片（OCR）多种格式
-- **风险识别**：自动识别违约金过高、保密条款不明确、争议解决不利等风险
-- **风险分级**：红色（重大风险）、黄色（中等风险）、绿色（建议优化）
-- **影响分析**：评估风险对甲方/乙方的具体影响
-- **建议生成**：基于法律知识库生成专业修改建议
-- **历史管理**：审查记录存档，支持检索和回溯
-- **报告导出**：生成 Markdown/HTML 格式审查报告
+当前不做复杂 RAG，只保留清晰扩展接口。
 
-### 技术架构
+## 当前目录
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                    用户交互层 (FastAPI)                   │
-├─────────────────────────────────────────────────────────┤
-│  合同上传 → 解析模块 → 风险识别 → RAG检索 → 建议生成 → 报告导出 │
-├─────────────────────────────────────────────────────────┤
-│  历史管理模块（SQLite + FAISS向量库）                      │
-└─────────────────────────────────────────────────────────┘
-```
-
-## 安装部署
-
-### 环境要求
-
-- Python 3.10+
-- Tesseract OCR（用于图片识别）
-
-### 1. 克隆项目
-
-```bash
-git clone <repository-url>
-cd contract_review_agent
-```
-
-### 2. 创建虚拟环境
-
-```bash
-python -m venv venv
-source venv/bin/activate  # Linux/Mac
-venv\Scripts\activate     # Windows
-```
-
-### 3. 安装依赖
-
-```bash
-pip install -r requirements.txt
-```
-
-**注意**：本项目使用 `langchain-anthropic` 调用 MiniMax 的 Anthropic API 兼容接口。
-
-### 4. 安装 Tesseract OCR（Windows）
-
-下载并安装 [Tesseract OCR](https://github.com/UB-Mannheim/tesseract/wiki)，安装时选择中文语言包。
-
-安装后，在代码中指定路径（如果非默认路径）：
-
-```python
-# parser/ocr_parser.py
-ocr_parser = OCRParser(tesseract_cmd=r"C:\Program Files\Tesseract-OCR\tesseract.exe")
-```
-
-### 5. 配置 MiniMax API
-
-编辑 `.env` 文件（项目根目录下，如果不存在请创建）：
-
-```env
-# MiniMax API配置
-MINIMAX_API_KEY=your-api-key-here
-MINIMAX_BASE_URL=https://api.minimaxi.com/anthropic
-MINIMAX_MODEL=MiniMax-M2.7
-```
-
-**API Key 获取**：访问 [MiniMax Platform](https://platform.minimaxi.com) 注册后获取。
-
-**支持的模型**：`MiniMax-M2.7`、`MiniMax-M2.7-highspeed`、`MiniMax-M2.5` 等。
-
-## 快速开始
-
-### 启动服务
-
-```bash
-python main.py
-```
-
-或使用 uvicorn：
-
-```bash
-uvicorn main:app --reload --host 0.0.0.0 --port 8000
-```
-
-### API 接口
-
-#### 1. 上传并审查合同
-
-```bash
-curl -X POST "http://localhost:8000/review" \
-  -F "file=@contract.pdf"
-```
-
-#### 2. 直接审查文本
-
-```bash
-curl -X POST "http://localhost:8000/review/text" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "file_name": "合同.txt",
-    "text": "甲方应在签订合同后3日内支付全额定金，如甲方违约，定金不予退还。",
-    "file_type": "txt"
-  }'
-```
-
-#### 3. 获取审查历史
-
-```bash
-curl "http://localhost:8000/history?limit=10"
-```
-
-#### 4. 搜索审查记录
-
-```bash
-curl "http://localhost:8000/history/search?q=租赁&risk_level=red"
-```
-
-#### 5. 生成审查报告
-
-```bash
-curl "http://localhost:8000/report/1?format=markdown" -o report.md
-```
-
-### Web 界面
-
-启动服务后，访问 http://localhost:8000 查看可视化界面。
-
-功能包括：
-- **合同审查**：上传 PDF/Word/图片文件或直接粘贴文本
-- **历史记录**：查看历史审查记录，支持搜索和详情查看
-- **统计数据**：查看审查统计和风险分布
-- **报告下载**：支持下载 Markdown 和 HTML 格式的审查报告
-
-## 项目结构
-
-```
+```text
 contract_review_agent/
-├── main.py                 # FastAPI入口
-├── config.py               # 配置管理
-├── requirements.txt        # 依赖清单
-├── parser/                 # 合同解析模块
-│   ├── base.py            # 解析器基类
-│   ├── pdf_parser.py      # PDF解析器
-│   ├── docx_parser.py     # Word解析器
-│   └── ocr_parser.py      # OCR解析器
-├── risk_analyzer/          # 风险识别模块
-│   ├── detector.py        # 风险检测器
-│   ├── classifier.py      # 风险分级器
-│   └── impact_analyzer.py # 影响分析器
-├── rag/                    # RAG增强模块
-│   ├── vector_store.py    # FAISS向量库
-│   ├── retriever.py       # 检索器
-│   ├── prompt_builder.py  # 提示词构建
-│   └── embedding.py       # 嵌入模型
-├── generator/              # 建议生成模块
-│   ├── clause_generator.py    # 修改建议生成
-│   └── report_generator.py     # 报告生成
-├── history/                # 历史管理模块
-│   ├── db.py              # 数据库操作
-│   └── search.py          # 检索接口
-├── prompts/                # 提示词库
-│   └── risk_prompts.py
-└── knowledge_base/         # 法律知识库
-    └── legal_clauses.json
+├── api/                # FastAPI 应用与路由
+├── core/               # 配置与依赖装配
+├── docs/               # 架构说明与样例合同
+├── models/             # 领域模型
+├── repositories/       # 数据访问层
+├── schemas/            # API 输入输出模型
+├── services/           # 解析、切分、分析、存储
+├── static/             # 最小前端页面
+├── tests/              # 单元测试与接口测试
+├── data/               # 运行期 SQLite 数据
+├── main.py             # 兼容入口
+├── requirements.txt
+└── README.md
 ```
 
-## 使用示例
+## 架构分层
 
-### Python SDK 用法
+- `api/`
+  暴露 REST API，不承载业务逻辑。
+- `core/`
+  管理配置和依赖注入。
+- `models/`
+  定义 `Clause`、`ParsedDocument`、`RiskAnalysis`、`Review` 等领域对象。
+- `schemas/`
+  定义 Pydantic 请求响应模型。
+- `services/parsers/`
+  负责不同文件类型的文本抽取。
+- `services/splitters/`
+  负责合同条款切分。
+- `services/analyzers/`
+  负责规则识别、法律知识获取、风险分析编排。
+- `services/llm/`
+  当前使用模板化结构输出，后续可替换成真实 LLM Provider。
+- `services/storage/`
+  提供 SQLite 初始化。
+- `repositories/`
+  负责审查记录持久化与查询。
 
-```python
-from parser import PDFParser
-from risk_analyzer import RiskDetector, RiskClassifier, ImpactAnalyzer
-from generator import ClauseGenerator
+## 已实现风险类型
 
-# 1. 解析合同
-parser = PDFParser()
-doc = parser.parse("contract.pdf")
+- `unilateral_exemption`
+- `unilateral_termination`
+- `excessive_liquidated_damages`
+- `unilateral_interpretation`
+- `one_sided_ip_assignment`
+- `biased_dispute_resolution`
 
-# 2. 检测风险
-detector = RiskDetector()
-risks = detector.detect(doc.text)
+风险等级严格限定为：
 
-# 3. 分级风险
-classifier = RiskClassifier()
-for risk in risks:
-    classification = classifier.classify(risk.risk_type, risk.clause_text)
-    print(f"{risk.risk_type}: {classification.risk_level.value}")
+- `high`
+- `medium`
+- `low`
 
-# 4. 分析影响
-impact_analyzer = ImpactAnalyzer()
-for risk in risks:
-    impact = impact_analyzer.analyze(risk.risk_type, risk.clause_text)
-    print(f"受影响方: {impact.affected_party.value}")
+## API
 
-# 5. 生成修改建议
-generator = ClauseGenerator()
-for risk in risks:
-    suggestion = generator.generate_suggestion(risk.clause_text, risk.risk_type)
-    print(suggestion.suggested_clause)
-```
+### `POST /api/review/upload`
 
-### 命令行用法
+上传合同文件并返回结构化审查结果。
 
-```python
-# review.py
-import asyncio
-from main import app
-from fastapi.testclient import TestClient
+请求类型：
 
-client = TestClient(app)
+- `multipart/form-data`
 
-# 审查文件
-with open("contract.pdf", "rb") as f:
-    response = client.post("/review", files={"file": f})
+字段：
 
-print(response.json())
-```
+- `file`
 
-## 风险识别类型
+### `POST /api/review/analyze`
 
-| 风险类型 | 说明 | 法律依据 |
-|---------|------|---------|
-| 违约金过高 | 违约金金额或计算方式不合理 | 民法典第585条 |
-| 保密条款不明确 | 保密范围、期限约定不清 | 民法典第501条 |
-| 争议解决不利 | 管辖法院或仲裁机构选择不利 | 民事诉讼法第34条 |
-| 责任边界模糊 | 责任范围、免责情形不明确 | 民法典第584条 |
-| 终止条款不合理 | 单方解除权过大 | 民法典第562条 |
-| 支付条款风险 | 预付款风险、付款期限不合理 | 民法典第628条 |
+直接提交合同文本。
 
-## 配置说明
-
-### config.py 主要配置项
-
-```python
-# 风险等级阈值
-RED_THRESHOLD = 0.8      # 红色风险阈值
-YELLOW_THRESHOLD = 0.5   # 黄色风险阈值
-
-# 向量库配置
-EMBEDDING_MODEL = "text-embedding-ada-002"
-EMBEDDING_DIM = 1536
-
-# 风险关键词
-RISK_KEYWORDS = {
-    "违约金": ["违约金", "滞纳金", "罚金"],
-    "保密条款": ["保密", "机密", "泄露"],
-    ...
-}
-```
-
-## 数据库
-
-审查记录存储在 SQLite 数据库中（`data/reviews.db`），包含以下字段：
-
-- `file_name`: 文件名
-- `file_type`: 文件类型
-- `review_time`: 审查时间
-- `overall_rating`: 整体评级
-- `risk_summary`: 风险统计
-- `risks_detail`: 风险详情
-- `suggestions`: 修改建议
-
-## 常见问题
-
-### Q: MiniMax API 调用失败？
-
-1. 检查 API Key 是否正确
-2. 确认网络连接正常
-3. 查看 API 配额是否用完
-
-### Q: OCR 识别不准？
-
-1. 确保图片清晰度足够
-2. 检查 Tesseract 是否安装了中文语言包
-3. 尝试使用更高质量的扫描件
-
-### Q: 风险识别不准确？
-
-1. 当前版本基于规则+LLM，可作为辅助工具
-2. 重要合同建议咨询专业律师
-3. 可以通过反馈不断优化模型
-
-## 扩展开发
-
-### 添加新的风险类型
-
-```python
-# risk_analyzer/detector.py
-RISK_PATTERNS = {
-    "新风险类型": [
-        r"匹配正则表达式",
-        ...
-    ],
-}
-```
-
-### 添加法律条款
-
-编辑 `knowledge_base/legal_clauses.json`：
+请求体：
 
 ```json
 {
-  "clauses": [
+  "document_name": "sample_contract.txt",
+  "text": "合同文本内容"
+}
+```
+
+### `GET /api/review/{review_id}`
+
+获取单条历史审查记录。
+
+### `GET /api/reviews`
+
+获取历史审查列表。
+
+支持参数：
+
+- `limit`
+- `offset`
+
+## 返回结构
+
+```json
+{
+  "review_id": "string",
+  "document_id": "string",
+  "document_name": "string",
+  "summary": "string",
+  "created_at": "2026-03-27T12:00:00+00:00",
+  "risks": [
     {
-      "category": "新类别",
-      "title": "条款标题",
-      "content": "条款内容",
-      "law_name": "法律法规名称",
-      "article": "条款编号"
+      "clause_id": "clause_1",
+      "clause_title": "第一条 付款安排",
+      "clause_text": "......",
+      "risk_type": "excessive_liquidated_damages",
+      "risk_level": "high",
+      "risk_reason": "......",
+      "impact_analysis": "......",
+      "suggestion": "......",
+      "replacement_text": "......"
     }
   ]
 }
 ```
 
-### 更换嵌入模型
+## 运行方式
 
-```python
-# rag/embedding.py
-class EmbeddingModel:
-    def __init__(self):
-        # 使用其他嵌入模型，如 m3e-base
-        from sentence_transformers import SentenceTransformer
-        self._model = SentenceTransformer('m3e-base')
+安装依赖：
+
+```bash
+pip install -r requirements.txt
 ```
 
-## 免责声明
+启动服务：
 
-本工具仅供参考和学习使用，不能替代专业法律意见。对于重要合同，建议咨询专业律师进行审查。
+```bash
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
+```
 
-## License
+访问地址：
 
-MIT License
+- Swagger: `http://localhost:8000/docs`
+- 最小前端: `http://localhost:8000/`
+
+## OCR 说明
+
+如果需要解析图片合同，请安装 Tesseract OCR。
+
+Windows 可通过环境变量指定路径：
+
+```bash
+set CONTRACT_AGENT_TESSERACT_CMD=C:\Program Files\Tesseract-OCR\tesseract.exe
+```
+
+## 测试
+
+运行：
+
+```bash
+pytest
+```
+
+测试文件：
+
+- `tests/test_api.py`
+- `tests/test_rule_engine.py`
+
+## 样例数据
+
+- 样例合同：`docs/sample_contract.txt`
+- 架构说明：`docs/architecture.md`
+
+## 后续扩展
+
+- 把 `TemplateLLMClient` 替换成真实模型调用
+- 把 `StaticLegalKnowledgeProvider` 升级成法规库/RAG 检索层
+- 增加主体识别、金额抽取、期限抽取
+- 增加 PostgreSQL 和对象存储支持
