@@ -1,0 +1,272 @@
+{
+  "info": {
+    "_postman_id": "7d6f27b3-2a58-4fb3-a0c9-7b5d9e5f9f01",
+    "name": "Contract Review Agent MVP",
+    "description": "Postman collection for the Contract Review Risk Agent MVP APIs.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000"
+    },
+    {
+      "key": "review_id",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "System",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "health"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Review",
+      "item": [
+        {
+          "name": "Analyze Text",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "var jsonData = pm.response.json();",
+                  "pm.test('review_id exists', function () {",
+                  "    pm.expect(jsonData.review_id).to.exist;",
+                  "});",
+                  "",
+                  "if (jsonData.review_id) {",
+                  "    pm.collectionVariables.set('review_id', jsonData.review_id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"document_name\": \"sample_contract.txt\",\n  \"text\": \"软件开发服务合同\\n\\n第一条 服务内容\\n乙方负责为甲方开发内部管理系统，并根据甲方要求完成部署与培训。\\n\\n第二条 付款安排\\n甲方应在合同签订后三个工作日内支付全部预付款。如甲方逾期付款，每逾期一日，按合同总金额的5%向乙方支付滞纳金。\\n\\n第三条 免责条款\\n如甲方认为项目延期或交付结果不符合预期，乙方无需承担任何责任。\\n\\n第四条 单方解除\\n甲方有权在任何时候单方解除本合同，且无需说明理由，乙方应无条件配合。\\n\\n第五条 知识产权\\n乙方在履行本合同过程中形成的全部软件代码、文档、模型、接口及相关知识产权永久归甲方所有。\\n\\n第六条 争议解决\\n因本合同引起的任何争议，仅可向甲方所在地人民法院提起诉讼。\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/review/analyze",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "review",
+                "analyze"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Upload File",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.review_id) {",
+                  "    pm.collectionVariables.set('review_id', jsonData.review_id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "docs/sample_contract.txt"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/review/upload",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "review",
+                "upload"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Review By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/review/{{review_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "review",
+                "{{review_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Reviews",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/reviews?limit=20&offset=0",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "reviews"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Negative Cases",
+      "item": [
+        {
+          "name": "Analyze Text - Empty Body",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"document_name\": \"empty.txt\",\n  \"text\": \"\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/review/analyze",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "review",
+                "analyze"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Upload Unsupported File Type",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": ""
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/review/upload",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "review",
+                "upload"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Missing Review",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/review/not-found",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "review",
+                "not-found"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

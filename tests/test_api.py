@@ -91,3 +91,46 @@ def test_list_reviews_returns_history(tmp_path: Path) -> None:
     assert len(items) == 2
     assert items[0]["document_name"] in {"contract_a.txt", "contract_b.txt"}
 
+
+def test_analyze_text_rejects_empty_text(tmp_path: Path) -> None:
+    client = build_test_client(tmp_path)
+
+    response = client.post(
+        "/api/review/analyze",
+        json={"document_name": "empty.txt", "text": ""},
+    )
+
+    assert response.status_code == 422
+
+
+def test_upload_rejects_empty_file(tmp_path: Path) -> None:
+    client = build_test_client(tmp_path)
+
+    response = client.post(
+        "/api/review/upload",
+        files={"file": ("empty.txt", b"", "text/plain")},
+    )
+
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Uploaded file is empty."
+
+
+def test_upload_rejects_unsupported_file_type(tmp_path: Path) -> None:
+    client = build_test_client(tmp_path)
+
+    response = client.post(
+        "/api/review/upload",
+        files={"file": ("table.xlsx", b"fake-binary", "application/octet-stream")},
+    )
+
+    assert response.status_code == 400
+    assert "Unsupported document type" in response.json()["detail"]
+
+
+def test_get_review_returns_404_for_missing_record(tmp_path: Path) -> None:
+    client = build_test_client(tmp_path)
+
+    response = client.get("/api/review/not-found")
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Review not found."

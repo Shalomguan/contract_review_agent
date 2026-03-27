@@ -2,11 +2,11 @@
 
 一个可运行、可扩展、可测试的合同审查风险 Agent 最小版本。
 
-当前版本目标很明确：
+当前版本目标：
 
 - 支持上传 `PDF / DOCX / TXT / 图片`
 - 抽取合同文本并切分条款
-- 用“规则 + Prompt 模板”识别高风险条款
+- 使用“规则 + Prompt 模板”识别高风险条款
 - 输出结构化 JSON
 - 保存历史审查记录
 
@@ -18,7 +18,7 @@
 contract_review_agent/
 ├── api/                # FastAPI 应用与路由
 ├── core/               # 配置与依赖装配
-├── docs/               # 架构说明与样例合同
+├── docs/               # 架构说明、样例合同、Postman collection
 ├── models/             # 领域模型
 ├── repositories/       # 数据访问层
 ├── schemas/            # API 输入输出模型
@@ -26,6 +26,8 @@ contract_review_agent/
 ├── static/             # 最小前端页面
 ├── tests/              # 单元测试与接口测试
 ├── data/               # 运行期 SQLite 数据
+├── .env.example        # 环境变量模板
+├── pytest.ini          # pytest 配置
 ├── main.py             # 兼容入口
 ├── requirements.txt
 └── README.md
@@ -142,6 +144,12 @@ contract_review_agent/
 pip install -r requirements.txt
 ```
 
+如果需要环境变量模板，可先复制：
+
+```bash
+copy .env.example .env
+```
+
 启动服务：
 
 ```bash
@@ -165,21 +173,44 @@ set CONTRACT_AGENT_TESSERACT_CMD=C:\Program Files\Tesseract-OCR\tesseract.exe
 
 ## 测试
 
-运行：
+运行全部测试：
 
 ```bash
 pytest
 ```
 
-测试文件：
+或：
 
-- `tests/test_api.py`
-- `tests/test_rule_engine.py`
+```bash
+pytest -q
+```
+
+当前已覆盖：
+
+- 正常文本分析
+- 正常文件上传
+- 历史记录查询
+- 空文本请求
+- 空文件上传
+- 不支持的文件类型
+- 查询不存在的记录
+
+## Postman
+
+仓库已提供可直接导入的 collection：
+
+- `docs/postman_collection.json`
+
+推荐在 Postman 中配置：
+
+- `base_url = http://localhost:8000`
+- `review_id` 由分析接口自动写入
 
 ## 样例数据
 
 - 样例合同：`docs/sample_contract.txt`
 - 架构说明：`docs/architecture.md`
+- Postman collection：`docs/postman_collection.json`
 
 ## 后续扩展
 
