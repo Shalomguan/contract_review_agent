@@ -69,6 +69,7 @@ class Review:
     document_id: str
     document_name: str
     summary: str
+    document_text: str
     risks: list[RiskAnalysis]
     created_at: datetime
 

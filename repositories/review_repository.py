@@ -22,6 +22,7 @@ class ReviewRepository:
             "document_id": review.document_id,
             "document_name": review.document_name,
             "summary": review.summary,
+            "document_text": review.document_text,
             "created_at": review.created_at.isoformat(),
             "risks": [asdict(risk) for risk in review.risks],
         }
@@ -166,6 +167,7 @@ class ReviewRepository:
             document_id=payload["document_id"],
             document_name=payload["document_name"],
             summary=self._normalize_summary(payload["summary"], self._count_risks(risks)),
+            document_text=payload.get("document_text", ""),
             risks=risks,
             created_at=datetime.fromisoformat(payload["created_at"]),
         )

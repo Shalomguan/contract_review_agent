@@ -79,6 +79,7 @@ def test_analyze_text_creates_review(tmp_path: Path) -> None:
     assert payload["review_id"]
     assert payload["risks"]
     assert {risk["risk_level"] for risk in payload["risks"]}.issubset({"high", "medium", "low"})
+    assert payload["document_text"] == SAMPLE_CONTRACT.strip()
     assert payload["risks"][0]["references"]
     assert "???" not in payload["summary"]
     assert "???" not in payload["risks"][0]["risk_reason"]
@@ -86,6 +87,7 @@ def test_analyze_text_creates_review(tmp_path: Path) -> None:
     detail = client.get(f"/api/review/{payload['review_id']}")
     assert detail.status_code == 200
     assert detail.json()["review_id"] == payload["review_id"]
+    assert detail.json()["document_text"] == SAMPLE_CONTRACT.strip()
     assert detail.json()["risks"][0]["references"]
 
 
@@ -114,7 +116,6 @@ def test_list_reviews_returns_history(tmp_path: Path) -> None:
     items = payload["items"]
     assert len(items) == 2
     assert all(item["document_name"].startswith("contract") for item in items)
-    assert any(item["clause_text"] for item in items if item["review_id"] == first["review_id"])
     assert payload["total"] == 2
     assert payload["limit"] == 20
     assert payload["offset"] == 0
@@ -131,18 +132,6 @@ def test_list_reviews_supports_document_name_search(tmp_path: Path) -> None:
     items = response.json()["items"]
     assert len(items) >= 1
     assert any(item["review_id"] == first["review_id"] for item in items)
-
-
-def test_history_items_include_primary_clause_preview(tmp_path: Path) -> None:
-    client = build_test_client(tmp_path)
-    created = create_review(client, "preview_contract.txt", GENERIC_RISKY_CONTRACT)
-
-    response = client.get("/api/reviews")
-    assert response.status_code == 200
-    item = next(item for item in response.json()["items"] if item["review_id"] == created["review_id"])
-    assert item["clause_title"]
-    assert item["clause_text"]
-    assert "甲方有权随时调整价格" in item["clause_text"] or "自动续约" in item["clause_text"]
 
 
 def test_list_reviews_supports_risk_level_filter_and_pagination(tmp_path: Path) -> None:
@@ -265,6 +254,16 @@ def test_duplicate_risk_hits_are_merged_per_clause(tmp_path: Path) -> None:
     confidentiality_risks = [item for item in payload["risks"] if item["risk_type"] == "confidentiality_imbalance"]
 
     assert len(confidentiality_risks) == 1
+
+
+def test_history_detail_returns_full_contract_text(tmp_path: Path) -> None:
+    client = build_test_client(tmp_path)
+    payload = create_review(client, "history_full_text.txt", GENERIC_RISKY_CONTRACT)
+
+    response = client.get(f"/api/review/{payload['review_id']}")
+    assert response.status_code == 200
+    detail = response.json()
+    assert detail["document_text"] == GENERIC_RISKY_CONTRACT.strip()
 
 
 def test_history_read_keeps_summary_and_references_after_old_summary_cleanup(tmp_path: Path) -> None:

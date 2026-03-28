@@ -412,7 +412,6 @@
             padding: 14px 16px;
         }
 
-        .history-clause-toggle,
         .clause-text-toggle,
         .risk-details,
         .reference-details {
@@ -421,7 +420,6 @@
             background: #ffffff;
         }
 
-        .history-clause-toggle summary,
         .clause-text-toggle summary,
         .risk-details summary,
         .reference-details summary {
@@ -429,7 +427,6 @@
             cursor: pointer;
         }
 
-        .history-clause-toggle summary::-webkit-details-marker,
         .clause-text-toggle summary::-webkit-details-marker,
         .risk-details summary::-webkit-details-marker,
         .reference-details summary::-webkit-details-marker {
@@ -442,7 +439,6 @@
             font-weight: 700;
         }
 
-        .history-clause-toggle .detail-content,
         .clause-text-toggle .field-value,
         .risk-details .detail-content,
         .reference-details .detail-content {
@@ -598,7 +594,6 @@
             font-weight: 600;
         }
 
-        .history-clause-toggle[open] summary::after,
         .risk-details[open] .detail-toggle::after,
         .reference-details[open] summary::after,
         .clause-text-toggle[open] summary::after {
@@ -644,7 +639,6 @@
             font-weight: 700;
         }
 
-        .history-clause-toggle summary::after,
         .reference-details summary::after,
         .clause-text-toggle summary::after {
             content: '展开';
@@ -845,6 +839,16 @@
                 <div class="panel">
                     <div class="panel-head">
                         <div>
+                            <h2>合同原文</h2>
+                            <div class="muted">查看整份已审查合同的完整文本</div>
+                        </div>
+                    </div>
+                    <div id="documentTextBox" class="document-text-box">提交合同文本或上传文件后，这里会显示完整合同原文。</div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-head">
+                        <div>
                             <h2>风险条目</h2>
                             <div class="muted">先看结论和建议，完整分析可按需展开</div>
                         </div>
@@ -889,6 +893,7 @@
         const summaryBox = document.getElementById("summaryBox");
         const errorBox = document.getElementById("errorBox");
         const resultMeta = document.getElementById("resultMeta");
+        const documentTextBox = document.getElementById("documentTextBox");
         const riskList = document.getElementById("riskList");
         const statTotal = document.getElementById("statTotal");
         const statHigh = document.getElementById("statHigh");
@@ -971,6 +976,11 @@
                 .replaceAll("low", "低风险");
         }
 
+        function renderDocumentText(data) {
+            const fullText = String(data?.document_text || '').trim();
+            documentTextBox.textContent = fullText || '当前审查结果未提供合同原文。';
+        }
+
         function renderSummary(data) {
             summaryBox.textContent = formatSummary(data?.summary);
             resultMeta.textContent = data?.document_name
@@ -1025,30 +1035,6 @@
         function renderClausePreview(clauseText) {
             const preview = truncateText(clauseText, 180) || '当前条款原文为空。';
             return `<div class="clause-summary">${escapeHtml(preview)}</div>`;
-        }
-
-        function renderHistoryClause(item) {
-            if (!item?.clause_text) {
-                return "";
-            }
-
-            const title = item.clause_title || "命中条款";
-            const preview = truncateText(item.clause_text, 120);
-            return `
-                <details class="history-clause-toggle">
-                    <summary>查看命中条款</summary>
-                    <div class="detail-content">
-                        <div class="field">
-                            <div class="field-label">${escapeHtml(title)}</div>
-                            <div class="field-value">${escapeHtml(preview)}</div>
-                        </div>
-                        <div class="field">
-                            <div class="field-label">条款原文</div>
-                            <div class="field-value">${escapeHtml(item.clause_text)}</div>
-                        </div>
-                    </div>
-                </details>
-            `;
         }
 
         function renderRiskDetails(risk) {
@@ -1167,6 +1153,7 @@
             currentResult = data;
             setError("");
             renderSummary(data);
+            renderDocumentText(data);
             renderRisks(data);
             activeReviewId = data?.review_id || activeReviewId;
             highlightActiveReview();
@@ -1297,6 +1284,7 @@
             activeReviewId = null;
             resultMeta.textContent = "等待分析";
             summaryBox.textContent = "提交合同文本或上传文件后，这里会显示审查摘要与风险统计。";
+            documentTextBox.textContent = "提交合同文本或上传文件后，这里会显示完整合同原文。";
             riskList.innerHTML = `<div class="empty">当前还没有审查结果。</div>`;
             statTotal.textContent = "0";
             statHigh.textContent = "0";
@@ -1464,7 +1452,6 @@
                                 </div>
                             </div>
                             <p class="summary">${escapeHtml(item.summary || "")}</p>
-                            ${renderHistoryClause(item)}
                             <div class="history-actions">
                                 <button class="secondary" type="button" data-action="view" data-review-id="${escapeHtml(item.review_id || "")}">查看详情</button>
                                 <button class="ghost" type="button" data-action="delete" data-review-id="${escapeHtml(item.review_id || "")}">删除</button>

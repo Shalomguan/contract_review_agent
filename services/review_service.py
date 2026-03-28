@@ -104,6 +104,7 @@ class ReviewService:
             document_id=document.document_id,
             document_name=document.document_name,
             summary=summary,
+            document_text=document.text,
             risks=risks,
             created_at=datetime.now(timezone.utc),
         )

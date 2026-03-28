@@ -73,6 +73,7 @@ class ReviewResponse(BaseModel):
     document_id: str
     document_name: str
     summary: str
+    document_text: str
     risks: list[RiskItemResponse]
     created_at: datetime
 
@@ -83,6 +84,7 @@ class ReviewResponse(BaseModel):
             document_id=review.document_id,
             document_name=review.document_name,
             summary=review.summary,
+            document_text=review.document_text,
             risks=[RiskItemResponse.from_domain(risk) for risk in review.risks],
             created_at=review.created_at,
         )
