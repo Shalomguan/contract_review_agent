@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>合同风险审查助手</title>
+    <title>合同审查风险 Agent 测试页</title>
     <style>
         :root {
             --bg: #f3f6f9;
@@ -224,24 +224,6 @@
             transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
         }
 
-        .history-item-head {
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-        }
-
-        .history-item-head input[type="checkbox"] {
-            margin-top: 3px;
-            width: 16px;
-            height: 16px;
-            accent-color: var(--accent);
-        }
-
-        .history-item-main {
-            min-width: 0;
-            flex: 1;
-        }
-
         .history-item.active {
             border-color: rgba(20, 58, 82, 0.4);
             box-shadow: 0 12px 28px rgba(20, 58, 82, 0.1);
@@ -272,34 +254,6 @@
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
-        }
-
-        .batch-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 14px;
-            padding: 10px 12px;
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            background: var(--panel-soft);
-        }
-
-        .batch-select {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--muted);
-            font-size: 14px;
-        }
-
-        .pager {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-            margin-top: 14px;
         }
 
         .summary-card {
@@ -368,54 +322,6 @@
             gap: 14px;
         }
 
-        .clause-group {
-            border-radius: 18px;
-            border: 1px solid var(--border);
-            background: #ffffff;
-            overflow: hidden;
-        }
-
-        .clause-group-head {
-            display: grid;
-            gap: 10px;
-            padding: 18px;
-            background: linear-gradient(180deg, #fbfdff 0%, #f7fafc 100%);
-            border-bottom: 1px solid var(--border);
-        }
-
-        .clause-group-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 14px;
-        }
-
-        .clause-title {
-            font-size: 18px;
-            font-weight: 700;
-        }
-
-        .clause-meta {
-            color: var(--muted);
-            font-size: 13px;
-        }
-
-        .clause-text {
-            background: #ffffff;
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 14px 16px;
-            line-height: 1.75;
-            white-space: pre-wrap;
-            word-break: break-word;
-        }
-
-        .clause-risk-list {
-            display: grid;
-            gap: 14px;
-            padding: 18px;
-        }
-
         .risk-card {
             border-radius: 16px;
             border: 1px solid var(--border);
@@ -453,19 +359,6 @@
             color: var(--muted);
             font-size: 13px;
             margin-top: 4px;
-        }
-
-        .risk-index {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 30px;
-            height: 30px;
-            border-radius: 999px;
-            background: var(--accent-soft);
-            color: var(--accent);
-            font-size: 13px;
-            font-weight: 700;
         }
 
         .badge {
@@ -595,9 +488,7 @@
             }
 
             .risk-header,
-            .panel-head,
-            .batch-bar,
-            .clause-group-top {
+            .panel-head {
                 align-items: flex-start;
                 flex-direction: column;
             }
@@ -608,24 +499,23 @@
     <div class="page">
         <section class="hero">
             <div class="hero-card">
-                <h1>合同风险审查助手</h1>
-                <p>面向企业法务、律师和中小企业主，用于快速识别合同风险条款，输出结构化分析、修改建议和参考依据，帮助快速完成初步合同风险审查。</p>
+                <h1>合同审查风险 Agent 测试页</h1>
+                <p>用于接口联调、历史记录排查、原始 JSON 检查和规则验证。当前页面不做折叠，核心功能和结果全部直接展开。</p>
                 <div class="actions" style="margin-top:18px;">
-                    <button class="primary" type="button" onclick="document.getElementById('contractText').focus()">开始审查</button>
-                    <button class="secondary" type="button" onclick="loadSample()">加载样例文本</button>
+                    <button class="ghost" type="button" onclick="window.location.href='/'">返回用户页</button>
                 </div>
             </div>
             <div class="hero-card meta-card">
                 <div>
-                    <div class="meta-label">使用方式</div>
+                    <div class="meta-label">接口概览</div>
                     <div class="meta-endpoints">
-                        <div class="endpoint">1. 粘贴合同文本或上传合同文件</div>
-                        <div class="endpoint">2. 查看风险摘要、风险等级与修改建议</div>
-                        <div class="endpoint">3. 在历史记录中按文件名、日期、风险等级筛选</div>
-                        <div class="endpoint">4. 通过历史记录快速回看已审查合同</div>
+                        <div class="endpoint">POST /api/review/upload</div>
+                        <div class="endpoint">POST /api/review/analyze</div>
+                        <div class="endpoint">GET /api/review/{review_id}</div>
+                        <div class="endpoint">GET /api/reviews</div>
                     </div>
                 </div>
-                <div class="muted">页面聚焦合同审查主流程，支持文本录入、文件上传、风险查看和历史检索。</div>
+                <div class="muted">左侧输入和历史记录，右侧直接展示摘要、统计、风险卡片、参考依据和原始 JSON。</div>
             </div>
         </section>
 
@@ -661,27 +551,14 @@
                     </div>
                     <div class="search-grid">
                         <input id="searchDocumentName" type="text" placeholder="按文件名搜索" />
-                        <select id="searchRiskLevel" aria-label="风险等级筛选">
-                            <option value="">全部风险等级</option>
-                            <option value="high">高风险</option>
-                            <option value="medium">中风险</option>
-                            <option value="low">低风险</option>
-                        </select>
                         <input id="searchDateFrom" type="date" aria-label="开始日期" />
                         <input id="searchDateTo" type="date" aria-label="结束日期" />
                     </div>
                     <div class="actions">
-                        <button class="primary" type="button" onclick="applyHistoryFilters()">查询</button>
+                        <button class="primary" type="button" onclick="loadReviews()">查询</button>
                         <button class="ghost" type="button" onclick="resetHistoryFilters()">清空</button>
                     </div>
                     <div id="reviewList" class="history-list"></div>
-                    <div class="pager">
-                        <div id="historyPagerMeta" class="muted">暂无历史记录</div>
-                        <div class="actions">
-                            <button id="prevPageButton" class="ghost" type="button" onclick="changeHistoryPage(-1)">上一页</button>
-                            <button id="nextPageButton" class="ghost" type="button" onclick="changeHistoryPage(1)">下一页</button>
-                        </div>
-                    </div>
                 </div>
             </div>
 
@@ -731,6 +608,13 @@
                     </div>
                 </div>
 
+                <div class="panel">
+                    <div class="panel-head">
+                        <h2>原始 JSON</h2>
+                        <div class="muted">便于调试、复制或和前端联调</div>
+                    </div>
+                    <pre id="resultJson">{}</pre>
+                </div>
             </div>
         </section>
     </div>
@@ -761,18 +645,15 @@
         const errorBox = document.getElementById("errorBox");
         const resultMeta = document.getElementById("resultMeta");
         const riskList = document.getElementById("riskList");
+        const resultJson = document.getElementById("resultJson");
         const statTotal = document.getElementById("statTotal");
         const statHigh = document.getElementById("statHigh");
         const statMedium = document.getElementById("statMedium");
         const statLow = document.getElementById("statLow");
         const riskFilters = document.getElementById("riskFilters");
         const searchDocumentName = document.getElementById("searchDocumentName");
-        const searchRiskLevel = document.getElementById("searchRiskLevel");
         const searchDateFrom = document.getElementById("searchDateFrom");
         const searchDateTo = document.getElementById("searchDateTo");
-        const historyPagerMeta = document.getElementById("historyPagerMeta");
-        const prevPageButton = document.getElementById("prevPageButton");
-        const nextPageButton = document.getElementById("nextPageButton");
 
         const levelLabels = {
             high: "高风险",
@@ -802,10 +683,6 @@
         let currentResult = null;
         let currentFilter = "all";
         let activeReviewId = null;
-        let historyOffset = 0;
-        let historyTotal = 0;
-        const historyLimit = 6;
-        const selectedReviewIds = new Set();
 
         function escapeHtml(value) {
             return String(value ?? "")
@@ -877,25 +754,6 @@
             `).join("")}</div>`;
         }
 
-        function groupRisksByClause(risks) {
-            const groups = new Map();
-
-            for (const risk of risks) {
-                const key = risk.clause_id || `${risk.clause_title || "unknown"}-${groups.size}`;
-                if (!groups.has(key)) {
-                    groups.set(key, {
-                        clauseId: risk.clause_id || "",
-                        clauseTitle: risk.clause_title || risk.clause_id || "未命名条款",
-                        clauseText: risk.clause_text || "",
-                        risks: []
-                    });
-                }
-                groups.get(key).risks.push(risk);
-            }
-
-            return Array.from(groups.values());
-        }
-
         function renderRisks(data) {
             const risks = Array.isArray(data?.risks) ? data.risks : [];
             const filteredRisks = currentFilter === "all"
@@ -912,58 +770,42 @@
                 return;
             }
 
-            const groupedRisks = groupRisksByClause(filteredRisks);
-
-            riskList.innerHTML = groupedRisks.map((group) => `
-                <section class="clause-group">
-                    <div class="clause-group-head">
-                        <div class="clause-group-top">
-                            <div>
-                                <div class="clause-title">${escapeHtml(group.clauseTitle)}</div>
-                                <div class="clause-meta">${escapeHtml(group.clauseId || "条款编号未标注")} · 共 ${group.risks.length} 个风险点</div>
-                            </div>
+            riskList.innerHTML = filteredRisks.map((risk) => `
+                <article class="risk-card ${escapeHtml(risk.risk_level || "low")}">
+                    <div class="risk-header">
+                        <div>
+                            <div class="risk-title">${escapeHtml(risk.clause_title || risk.clause_id || "未命名条款")}</div>
+                            <div class="risk-subtitle">${escapeHtml(formatRiskType(risk.risk_type))}</div>
                         </div>
-                        <div class="clause-text">${escapeHtml(group.clauseText || "当前条款原文为空。")}</div>
+                        <span class="badge ${escapeHtml(risk.risk_level || "low")}">${escapeHtml(levelLabels[risk.risk_level] || "低风险")}</span>
                     </div>
-                    <div class="clause-risk-list">
-                        ${group.risks.map((risk, index) => `
-                            <article class="risk-card ${escapeHtml(risk.risk_level || "low")}">
-                                <div class="risk-header">
-                                    <div style="display:flex; gap:12px; align-items:flex-start;">
-                                        <span class="risk-index">${index + 1}</span>
-                                        <div>
-                                            <div class="risk-title">${escapeHtml(formatRiskType(risk.risk_type))}</div>
-                                            <div class="risk-subtitle">系统识别出的风险点</div>
-                                        </div>
-                                    </div>
-                                    <span class="badge ${escapeHtml(risk.risk_level || "low")}">${escapeHtml(levelLabels[risk.risk_level] || "低风险")}</span>
-                                </div>
-                                <div class="risk-body">
-                                    <div class="field">
-                                        <div class="field-label">风险原因</div>
-                                        <div class="field-value">${escapeHtml(risk.risk_reason || "")}</div>
-                                    </div>
-                                    <div class="field">
-                                        <div class="field-label">影响分析</div>
-                                        <div class="field-value">${escapeHtml(risk.impact_analysis || "")}</div>
-                                    </div>
-                                    <div class="field">
-                                        <div class="field-label">修改建议</div>
-                                        <div class="field-value">${escapeHtml(risk.suggestion || "")}</div>
-                                    </div>
-                                    <div class="field">
-                                        <div class="field-label">替代文本</div>
-                                        <div class="field-value">${escapeHtml(risk.replacement_text || "")}</div>
-                                    </div>
-                                    <div class="field">
-                                        <div class="field-label">参考依据</div>
-                                        ${renderReferences(risk.references)}
-                                    </div>
-                                </div>
-                            </article>
-                        `).join("")}
+                    <div class="risk-body">
+                        <div class="field">
+                            <div class="field-label">条款原文</div>
+                            <div class="field-value">${escapeHtml(risk.clause_text || "")}</div>
+                        </div>
+                        <div class="field">
+                            <div class="field-label">风险原因</div>
+                            <div class="field-value">${escapeHtml(risk.risk_reason || "")}</div>
+                        </div>
+                        <div class="field">
+                            <div class="field-label">影响分析</div>
+                            <div class="field-value">${escapeHtml(risk.impact_analysis || "")}</div>
+                        </div>
+                        <div class="field">
+                            <div class="field-label">修改建议</div>
+                            <div class="field-value">${escapeHtml(risk.suggestion || "")}</div>
+                        </div>
+                        <div class="field">
+                            <div class="field-label">替代文本</div>
+                            <div class="field-value">${escapeHtml(risk.replacement_text || "")}</div>
+                        </div>
+                        <div class="field">
+                            <div class="field-label">参考依据</div>
+                            ${renderReferences(risk.references)}
+                        </div>
                     </div>
-                </section>
+                </article>
             `).join("");
         }
 
@@ -972,64 +814,13 @@
             setError("");
             renderSummary(data);
             renderRisks(data);
+            resultJson.textContent = JSON.stringify(data, null, 2);
             activeReviewId = data?.review_id || activeReviewId;
             highlightActiveReview();
         }
 
         function loadSample() {
             document.getElementById("contractText").value = sampleText;
-        }
-
-        function buildHistoryQuery() {
-            const params = new URLSearchParams({
-                limit: String(historyLimit),
-                offset: String(historyOffset)
-            });
-
-            const documentName = searchDocumentName.value.trim();
-            const riskLevel = searchRiskLevel.value;
-            const dateFrom = searchDateFrom.value;
-            const dateTo = searchDateTo.value;
-
-            if (documentName) params.set("document_name", documentName);
-            if (riskLevel) params.set("risk_level", riskLevel);
-            if (dateFrom) params.set("date_from", dateFrom);
-            if (dateTo) params.set("date_to", dateTo);
-
-            return params;
-        }
-
-        function updateHistoryPager(total) {
-            historyTotal = Number(total || 0);
-            const currentPage = Math.floor(historyOffset / historyLimit) + 1;
-            const totalPages = Math.max(Math.ceil(historyTotal / historyLimit), 1);
-
-            historyPagerMeta.textContent = historyTotal
-                ? `第 ${currentPage} / ${totalPages} 页，共 ${historyTotal} 条记录`
-                : "暂无历史记录";
-
-            prevPageButton.disabled = historyOffset <= 0;
-            nextPageButton.disabled = historyOffset + historyLimit >= historyTotal;
-        }
-
-        function applyHistoryFilters() {
-            historyOffset = 0;
-            loadReviews();
-        }
-
-        function resetHistoryFilters() {
-            searchDocumentName.value = "";
-            searchRiskLevel.value = "";
-            searchDateFrom.value = "";
-            searchDateTo.value = "";
-            historyOffset = 0;
-            selectedReviewIds.clear();
-            loadReviews();
-        }
-
-        function changeHistoryPage(direction) {
-            historyOffset = Math.max(historyOffset + direction * historyLimit, 0);
-            loadReviews();
         }
 
         async function handleResponse(response) {
@@ -1039,73 +830,6 @@
                 throw new Error(message);
             }
             return data;
-        }
-
-        function updateBatchBar() {
-            const count = selectedReviewIds.size;
-            const selectedCount = document.getElementById("selectedCount");
-            const batchDeleteButton = document.getElementById("batchDeleteButton");
-            const selectAllCheckbox = document.getElementById("selectAllHistory");
-
-            if (selectedCount) {
-                selectedCount.textContent = count ? `已选择 ${count} 条记录` : "未选择记录";
-            }
-
-            if (batchDeleteButton) {
-                batchDeleteButton.disabled = count === 0;
-            }
-
-            const pageCheckboxes = Array.from(reviewList.querySelectorAll('input[data-history-select="item"]'));
-            if (!selectAllCheckbox) {
-                return;
-            }
-
-            if (!pageCheckboxes.length) {
-                selectAllCheckbox.checked = false;
-                selectAllCheckbox.indeterminate = false;
-                return;
-            }
-
-            const checkedCount = pageCheckboxes.filter((checkbox) => checkbox.checked).length;
-            selectAllCheckbox.checked = checkedCount === pageCheckboxes.length;
-            selectAllCheckbox.indeterminate = checkedCount > 0 && checkedCount < pageCheckboxes.length;
-        }
-
-        function syncHistorySelection() {
-            for (const checkbox of reviewList.querySelectorAll('input[data-history-select="item"]')) {
-                checkbox.checked = selectedReviewIds.has(checkbox.value);
-            }
-            updateBatchBar();
-        }
-
-        function toggleHistorySelection(reviewId, checked) {
-            if (!reviewId) return;
-            if (checked) {
-                selectedReviewIds.add(reviewId);
-            } else {
-                selectedReviewIds.delete(reviewId);
-            }
-            updateBatchBar();
-        }
-
-        function toggleSelectAllCurrentPage(checked) {
-            for (const checkbox of reviewList.querySelectorAll('input[data-history-select="item"]')) {
-                checkbox.checked = checked;
-                toggleHistorySelection(checkbox.value, checked);
-            }
-            updateBatchBar();
-        }
-
-        function resetResultView() {
-            currentResult = null;
-            activeReviewId = null;
-            resultMeta.textContent = "等待分析";
-            summaryBox.textContent = "提交合同文本或上传文件后，这里会显示审查摘要与风险统计。";
-            riskList.innerHTML = `<div class="empty">当前还没有审查结果。</div>`;
-            statTotal.textContent = "0";
-            statHigh.textContent = "0";
-            statMedium.textContent = "0";
-            statLow.textContent = "0";
         }
 
         async function analyzeText() {
@@ -1123,7 +847,6 @@
                 });
                 const data = await handleResponse(response);
                 setResult(data);
-                historyOffset = 0;
                 await loadReviews();
             } catch (error) {
                 setError(error.message);
@@ -1146,7 +869,6 @@
                 });
                 const data = await handleResponse(response);
                 setResult(data);
-                historyOffset = 0;
                 await loadReviews();
             } catch (error) {
                 setError(error.message);
@@ -1172,47 +894,21 @@
             try {
                 const response = await fetch(`/api/review/${reviewId}`, { method: "DELETE" });
                 await handleResponse(response);
-                selectedReviewIds.delete(reviewId);
                 if (activeReviewId === reviewId) {
-                    resetResultView();
-                }
-                if (historyOffset > 0 && historyOffset >= Math.max(historyTotal - 1, 0)) {
-                    historyOffset = Math.max(historyOffset - historyLimit, 0);
+                    activeReviewId = null;
+                    currentResult = null;
+                    resultMeta.textContent = "等待分析";
+                    summaryBox.textContent = "提交合同文本或上传文件后，这里会显示审查摘要与风险统计。";
+                    riskList.innerHTML = `<div class="empty">当前还没有审查结果。</div>`;
+                    resultJson.textContent = "{}";
+                    statTotal.textContent = "0";
+                    statHigh.textContent = "0";
+                    statMedium.textContent = "0";
+                    statLow.textContent = "0";
                 }
                 await loadReviews();
             } catch (error) {
                 setError(error.message || "删除历史记录失败，请稍后重试。");
-            }
-        }
-
-        async function deleteSelectedReviews() {
-            const ids = Array.from(selectedReviewIds);
-            if (!ids.length) {
-                return;
-            }
-
-            if (!window.confirm(`确定要批量删除选中的 ${ids.length} 条历史记录吗？`)) {
-                return;
-            }
-
-            try {
-                for (const reviewId of ids) {
-                    const response = await fetch(`/api/review/${reviewId}`, { method: "DELETE" });
-                    await handleResponse(response);
-                    if (activeReviewId === reviewId) {
-                        resetResultView();
-                    }
-                }
-
-                const nextTotal = Math.max(historyTotal - ids.length, 0);
-                if (historyOffset > 0 && historyOffset >= nextTotal) {
-                    historyOffset = Math.max(Math.floor((Math.max(nextTotal, 1) - 1) / historyLimit) * historyLimit, 0);
-                }
-
-                selectedReviewIds.clear();
-                await loadReviews();
-            } catch (error) {
-                setError(error.message || "批量删除历史记录失败，请稍后重试。");
             }
         }
 
@@ -1224,48 +920,25 @@
 
         async function loadReviews() {
             try {
-                const response = await fetch(`/api/reviews?${buildHistoryQuery().toString()}`);
+                const response = await fetch("/api/reviews");
                 const data = await handleResponse(response);
                 const items = Array.isArray(data?.items) ? data.items : [];
-                updateHistoryPager(data?.total || 0);
 
                 if (!items.length) {
-                    reviewList.innerHTML = `<div class="empty">当前筛选条件下没有历史记录。</div>`;
-                    updateBatchBar();
+                    reviewList.innerHTML = `<div class="empty">暂无历史记录。</div>`;
                     return;
                 }
 
-                reviewList.innerHTML = `
-                    <div class="batch-bar">
-                        <label class="batch-select">
-                            <input id="selectAllHistory" type="checkbox" />
-                            <span>全选当前页</span>
-                        </label>
-                        <div class="history-actions">
-                            <span id="selectedCount" class="muted">未选择记录</span>
-                            <button id="batchDeleteButton" class="ghost" type="button">批量删除</button>
-                        </div>
-                    </div>
-                ` + items.map((item) => {
+                reviewList.innerHTML = items.map((item) => {
                     const counts = item.risk_counts || {};
                     return `
                         <div class="history-item" data-review-id="${escapeHtml(item.review_id || "")}">
-                            <div class="history-item-head">
-                                <input
-                                    type="checkbox"
-                                    data-history-select="item"
-                                    value="${escapeHtml(item.review_id || "")}"
-                                    aria-label="选择历史记录"
-                                />
-                                <div class="history-item-main">
-                                    <strong>${escapeHtml(item.document_name || "")}</strong>
-                                    <div class="history-meta">
-                                        <span>${escapeHtml(formatDate(item.created_at))}</span>
-                                        <span>高风险 ${escapeHtml(counts.high || 0)}</span>
-                                        <span>中风险 ${escapeHtml(counts.medium || 0)}</span>
-                                        <span>低风险 ${escapeHtml(counts.low || 0)}</span>
-                                    </div>
-                                </div>
+                            <strong>${escapeHtml(item.document_name || "")}</strong>
+                            <div class="history-meta">
+                                <span>${escapeHtml(formatDate(item.created_at))}</span>
+                                <span>高风险 ${escapeHtml(counts.high || 0)}</span>
+                                <span>中风险 ${escapeHtml(counts.medium || 0)}</span>
+                                <span>低风险 ${escapeHtml(counts.low || 0)}</span>
                             </div>
                             <p class="summary">${escapeHtml(item.summary || "")}</p>
                             <div class="history-actions">
@@ -1284,26 +957,9 @@
                     }
                 }
 
-                const selectAllHistory = document.getElementById("selectAllHistory");
-                const batchDeleteButton = document.getElementById("batchDeleteButton");
-
-                if (selectAllHistory) {
-                    selectAllHistory.addEventListener("change", () => toggleSelectAllCurrentPage(selectAllHistory.checked));
-                }
-
-                if (batchDeleteButton) {
-                    batchDeleteButton.addEventListener("click", deleteSelectedReviews);
-                }
-
-                for (const checkbox of reviewList.querySelectorAll('input[data-history-select="item"]')) {
-                    checkbox.addEventListener("change", () => toggleHistorySelection(checkbox.value, checkbox.checked));
-                }
-
-                syncHistorySelection();
                 highlightActiveReview();
             } catch (error) {
                 reviewList.innerHTML = `<div class="error-box">${escapeHtml(error.message)}</div>`;
-                updateBatchBar();
             }
         }
 

@@ -37,6 +37,15 @@ class RiskDetection:
 
 
 @dataclass(slots=True)
+class RiskReference:
+    """A structured legal reference attached to one risk result."""
+
+    title: str
+    source: str
+    content: str
+
+
+@dataclass(slots=True)
 class RiskAnalysis:
     """A structured risk analysis result for one clause."""
 
@@ -49,6 +58,7 @@ class RiskAnalysis:
     impact_analysis: str
     suggestion: str
     replacement_text: str
+    references: list[RiskReference] = field(default_factory=list)
 
 
 @dataclass(slots=True)
@@ -74,3 +84,12 @@ class ReviewListItem:
     created_at: datetime
     risk_counts: dict[str, int]
 
+
+@dataclass(slots=True)
+class ReviewListFilters:
+    """Optional filters for history listing queries."""
+
+    document_name: str | None = None
+    date_from: datetime | None = None
+    date_to: datetime | None = None
+    risk_level: str | None = None

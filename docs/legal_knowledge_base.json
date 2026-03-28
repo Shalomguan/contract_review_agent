@@ -1,0 +1,243 @@
+[
+  {
+    "risk_type": "unilateral_exemption",
+    "title": "单方免责审查要点",
+    "source": "合同风险审查规则",
+    "keywords": [
+      "免责",
+      "不承担责任",
+      "无需赔偿"
+    ],
+    "content": "一方不得通过笼统免责条款免除其因违约、过错或供应缺陷应承担的主要责任。",
+    "id": "knowledge_001",
+    "category": "general_contract_review",
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-28"
+  },
+  {
+    "risk_type": "unilateral_termination",
+    "title": "单方解除权限制",
+    "source": "合同风险审查规则",
+    "keywords": [
+      "单方解除",
+      "随时解除",
+      "无条件解除"
+    ],
+    "content": "解除权一般应与重大违约、法定解除情形或明确约定的触发条件挂钩。",
+    "id": "knowledge_002",
+    "category": "general_contract_review",
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-28"
+  },
+  {
+    "risk_type": "excessive_liquidated_damages",
+    "title": "违约金合理性",
+    "source": "违约责任审查规则",
+    "keywords": [
+      "违约金",
+      "滞纳金",
+      "过高",
+      "%"
+    ],
+    "content": "违约金或滞纳金明显过高时，存在被调整或不被完整支持的风险。",
+    "id": "knowledge_003",
+    "category": "general_contract_review",
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-28"
+  },
+  {
+    "risk_type": "unilateral_interpretation",
+    "title": "解释权对等性",
+    "source": "合同条款审查规则",
+    "keywords": [
+      "最终解释权",
+      "解释权归"
+    ],
+    "content": "如合同条款存在争议，不宜由一方单方作出最终解释或约束对方。",
+    "id": "knowledge_004",
+    "category": "general_contract_review",
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-28"
+  },
+  {
+    "risk_type": "one_sided_ip_assignment",
+    "title": "知识产权归属平衡",
+    "source": "知识产权合同审查要点",
+    "keywords": [
+      "知识产权",
+      "源代码",
+      "归甲方所有"
+    ],
+    "content": "对已有成果、定制化成果和后续使用授权应进行区分约定，避免无差别归属于一方。",
+    "id": "knowledge_005",
+    "category": "general_contract_review",
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-28"
+  },
+  {
+    "risk_type": "biased_dispute_resolution",
+    "title": "争议管辖公平性",
+    "source": "诉讼与仲裁条款审查要点",
+    "keywords": [
+      "甲方所在地法院",
+      "仲裁",
+      "诉讼"
+    ],
+    "content": "争议解决条款不宜以显著增加一方诉讼成本的方式设定管辖地点。",
+    "id": "knowledge_006",
+    "category": "general_contract_review",
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-28"
+  },
+  {
+    "risk_type": "auto_renewal_trap",
+    "title": "自动续约提醒义务",
+    "source": "合同期限管理规则",
+    "keywords": [
+      "自动续约",
+      "默认续约",
+      "未提出异议"
+    ],
+    "content": "自动续约应设置明确提醒和合理退出期，避免当事人因忽视条款而被动续约。",
+    "id": "knowledge_007",
+    "category": "general_contract_review",
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-28"
+  },
+  {
+    "risk_type": "unilateral_change_right",
+    "title": "单方变更权边界",
+    "source": "通用合同风险指引",
+    "keywords": [
+      "单方变更",
+      "有权调整",
+      "可随时修改"
+    ],
+    "content": "对价格、规则和标准的重大变更原则上应经双方同意，单方变更容易导致对价失衡。",
+    "id": "knowledge_008",
+    "category": "general_contract_review",
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-28"
+  },
+  {
+    "risk_type": "payment_imbalance",
+    "title": "付款安排平衡性",
+    "source": "费用条款审查指引",
+    "keywords": [
+      "预付款",
+      "结算",
+      "以甲方确认为准"
+    ],
+    "content": "付款安排应与交付成果和双方可验证的确认节点挂钩，过高预付或单方确认会引入失衡风险。",
+    "id": "knowledge_009",
+    "category": "general_contract_review",
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-28"
+  },
+  {
+    "risk_type": "acceptance_unfairness",
+    "title": "验收机制公平性",
+    "source": "交付与验收条款指引",
+    "keywords": [
+      "验收",
+      "甲方认定",
+      "默认合格"
+    ],
+    "content": "验收条款应包含可操作的标准、期限和异议处理机制，不宜完全交由一方单方认定。",
+    "id": "knowledge_010",
+    "category": "general_contract_review",
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-28"
+  },
+  {
+    "risk_type": "confidentiality_imbalance",
+    "title": "保密义务对等性",
+    "source": "保密条款审查指引",
+    "keywords": [
+      "保密",
+      "无限期",
+      "仅乙方"
+    ],
+    "content": "保密义务通常应由接触未公开信息的双方共同承担，并设置合理期限与例外。",
+    "id": "knowledge_011",
+    "category": "general_contract_review",
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-28"
+  },
+  {
+    "risk_type": "non_compete_or_exclusivity",
+    "title": "排他与竞业限制审查",
+    "source": "通用合同风险指引",
+    "keywords": [
+      "独家",
+      "排他",
+      "竞业限制"
+    ],
+    "content": "独家或竞业条款应同时限定地域、客户范围、期限和补偿安排，否则容易构成过度约束。",
+    "id": "knowledge_012",
+    "category": "general_contract_review",
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-28"
+  },
+  {
+    "risk_type": "delivery_or_notice_trap",
+    "title": "送达与通知生效规则",
+    "source": "程序条款审查指引",
+    "keywords": [
+      "通知",
+      "送达",
+      "发出即视为送达"
+    ],
+    "content": "通知或送达条款应以可证明的签收、回执或已阅记录作为生效依据。",
+    "id": "knowledge_013",
+    "category": "general_contract_review",
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-28"
+  },
+  {
+    "risk_type": "termination_penalty_unfairness",
+    "title": "提前解约成本合理性",
+    "source": "合同解除与终止指引",
+    "keywords": [
+      "提前解约",
+      "支付全部剩余费用",
+      "不予退还"
+    ],
+    "content": "解约成本应以已发生的实际损失为基础，不宜笼统要求一次性支付未履行全部期间的对价。",
+    "id": "knowledge_014",
+    "category": "general_contract_review",
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-28"
+  },
+  {
+    "risk_type": "liability_imbalance",
+    "title": "责任分配平衡性",
+    "source": "通用合同风险指引",
+    "keywords": [
+      "违约责任",
+      "赔偿",
+      "乙方承担全部责任"
+    ],
+    "content": "责任分配应与各方的管控能力、违约行为和过错程度相匹配，避免将主要风险完全集中给一方。",
+    "id": "knowledge_015",
+    "category": "general_contract_review",
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-28"
+  },
+  {
+    "risk_type": "missing_core_terms",
+    "title": "核心条款完整性",
+    "source": "合同审查基础规则",
+    "keywords": [
+      "交付",
+      "验收",
+      "付款",
+      "期限"
+    ],
+    "content": "合同若仅提及交付、验收或付款主题，但缺少标准、时间节点或处理流程，则属于需要人工复核的模糊风险。",
+    "id": "knowledge_016",
+    "category": "general_contract_review",
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-28"
+  }
+]

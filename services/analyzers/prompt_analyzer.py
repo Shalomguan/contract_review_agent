@@ -1,5 +1,5 @@
 """Prompt-oriented structured analyzer."""
-from models.review import Clause, RiskAnalysis, RiskDetection
+from models.review import Clause, RiskAnalysis, RiskDetection, RiskReference
 from services.analyzers.legal_knowledge_provider import KnowledgeSnippet
 from services.llm.base import PromptPayload, StructuredLLMClient
 from services.llm.prompt_builder import PromptBuilder
@@ -36,6 +36,15 @@ class PromptAnalyzer:
         )
         result = self.llm_client.analyze(payload)
 
+        references = [
+            RiskReference(
+                title=item.title,
+                source=item.source,
+                content=item.content,
+            )
+            for item in knowledge_snippets
+        ]
+
         return RiskAnalysis(
             clause_id=clause.clause_id,
             clause_title=clause.title,
@@ -46,5 +55,5 @@ class PromptAnalyzer:
             impact_analysis=result["impact_analysis"],
             suggestion=result["suggestion"],
             replacement_text=result["replacement_text"],
+            references=references,
         )
-

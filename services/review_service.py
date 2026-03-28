@@ -2,12 +2,12 @@
 from __future__ import annotations
 
 from collections import Counter
-from datetime import datetime, timezone
+from datetime import date, datetime, time, timezone
 from pathlib import Path
 from uuid import uuid4
 
 from core.config import Settings
-from models.review import ParsedDocument, Review
+from models.review import ParsedDocument, Review, ReviewListFilters
 from repositories.review_repository import ReviewRepository
 from services.analyzers.risk_analyzer import RiskAnalyzer
 from services.parsers.base import DocumentParseError
@@ -56,17 +56,29 @@ class ReviewService:
         """Fetch a persisted review by ID."""
         return self.review_repository.get(review_id)
 
-    def list_reviews(self, limit: int = 20, offset: int = 0):
-        """List persisted reviews for history pages."""
-        return self.review_repository.list(limit=limit, offset=offset)
-
-    def _analyze_document(
+    def list_reviews(
         self,
-        document_name: str,
-        text: str,
-        content_type: str,
-        metadata: dict[str, str] | None = None,
-    ) -> Review:
+        limit: int = 20,
+        offset: int = 0,
+        document_name: str | None = None,
+        date_from: date | None = None,
+        date_to: date | None = None,
+        risk_level: str | None = None,
+    ):
+        """List persisted reviews for history pages."""
+        filters = ReviewListFilters(
+            document_name=document_name.strip() if document_name else None,
+            date_from=self._start_of_day(date_from),
+            date_to=self._end_of_day(date_to),
+            risk_level=risk_level,
+        )
+        return self.review_repository.list(filters=filters, limit=limit, offset=offset)
+
+    def delete_review(self, review_id: str) -> bool:
+        """Delete one persisted review by ID."""
+        return self.review_repository.delete(review_id)
+
+    def _analyze_document(self, document_name: str, text: str, content_type: str, metadata: dict[str, str] | None = None) -> Review:
         normalized_text = text.strip()
         if not normalized_text:
             raise DocumentParseError("No text could be extracted from the document.")
@@ -104,12 +116,25 @@ class ReviewService:
         counts = Counter(risk.risk_level for risk in risks)
         if risk_count == 0:
             return (
-                f"共拆分 {len(document.clauses)} 个条款，当前规则集未命中明显风险，"
-                "建议仍由法务人员进行复核。"
+                f"共拆分 {len(document.clauses)} 个条款，"
+                + "当前规则集未命中明显风险，"
+                + "建议仍由法务人员进行复核。"
             )
 
         return (
-            f"共拆分 {len(document.clauses)} 个条款，识别出 {risk_count} 个风险点，"
-            f"其中 high {counts.get('high', 0)} 个、medium {counts.get('medium', 0)} 个、"
-            f"low {counts.get('low', 0)} 个。"
+            f"共拆分 {len(document.clauses)} 个条款，"
+            + f"识别出 {risk_count} 个风险点，"
+            + f"其中 high {counts.get('high', 0)} 个，"
+            + f"medium {counts.get('medium', 0)} 个，"
+            + f"low {counts.get('low', 0)} 个。"
         )
+
+    def _start_of_day(self, value: date | None) -> datetime | None:
+        if value is None:
+            return None
+        return datetime.combine(value, time.min, tzinfo=timezone.utc)
+
+    def _end_of_day(self, value: date | None) -> datetime | None:
+        if value is None:
+            return None
+        return datetime.combine(value, time.max, tzinfo=timezone.utc)

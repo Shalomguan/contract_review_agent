@@ -1,4 +1,5 @@
 ﻿"""FastAPI application factory."""
+import logging
 from pathlib import Path
 
 from fastapi import FastAPI
@@ -10,10 +11,14 @@ from core.config import Settings, get_settings
 from core.container import build_container
 
 
+logger = logging.getLogger(__name__)
+
+
 def create_app(settings: Settings | None = None) -> FastAPI:
     """Create a configured FastAPI application instance."""
     settings = settings or get_settings()
     container = build_container(settings)
+    logger.info(container.review_service.risk_analyzer.retrieval_service.status_message)
 
     app = FastAPI(
         title=settings.app_name,
@@ -34,9 +39,18 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             return FileResponse(index_file)
         return {"name": settings.app_name, "version": settings.app_version}
 
+    @app.get("/lab", include_in_schema=False, response_model=None)
+    async def lab():
+        lab_file = static_dir / "lab.html"
+        if lab_file.exists():
+            return FileResponse(lab_file)
+        return {"name": settings.app_name, "mode": "lab"}
+
     @app.get("/health", tags=["system"])
     async def health() -> dict[str, str]:
-        return {"status": "ok"}
+        retrieval_service = container.review_service.risk_analyzer.retrieval_service
+        rag_mode = "vector" if retrieval_service.using_vector_retrieval else "lexical_fallback"
+        return {"status": "ok", "rag_mode": rag_mode}
 
     return app
 

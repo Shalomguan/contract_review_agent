@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 from core.config import Settings, get_settings
 from repositories.review_repository import ReviewRepository
-from services.analyzers.legal_knowledge_provider import StaticLegalKnowledgeProvider
+from services.analyzers.legal_knowledge_provider import LegalKnowledgeProvider
 from services.analyzers.prompt_analyzer import PromptAnalyzer
 from services.analyzers.retrieval_service import RetrievalService
 from services.analyzers.risk_analyzer import RiskAnalyzer
@@ -15,6 +15,8 @@ from services.parsers.factory import DocumentParserFactory
 from services.parsers.image_parser import ImageParser
 from services.parsers.pdf_parser import PdfParser
 from services.parsers.text_parser import TextParser
+from services.rag.embedding_provider import SentenceTransformerEmbeddingProvider
+from services.rag.knowledge_index import KnowledgeVectorIndex
 from services.review_service import ReviewService
 from services.splitters.contract_splitter import ContractSplitter
 from services.storage.sqlite_db import SQLiteDatabase
@@ -46,8 +48,23 @@ def build_container(settings: Settings | None = None) -> ApplicationContainer:
     )
     splitter = ContractSplitter()
     rule_engine = RuleEngine()
-    knowledge_provider = StaticLegalKnowledgeProvider()
-    retrieval_service = RetrievalService(knowledge_provider)
+    knowledge_provider = LegalKnowledgeProvider(settings.knowledge_base_path)
+    embedding_provider = SentenceTransformerEmbeddingProvider(
+        model_name=settings.embedding_model_name,
+        cache_dir=settings.embedding_cache_dir,
+        local_files_only=settings.embedding_local_files_only,
+    )
+    vector_index = KnowledgeVectorIndex(
+        index_dir=settings.rag_index_dir,
+        embedding_provider=embedding_provider,
+        rebuild_on_start=settings.rag_rebuild_on_start,
+    )
+    retrieval_service = RetrievalService(
+        legal_knowledge_provider=knowledge_provider,
+        top_k=settings.retrieval_top_k,
+        retrieval_mode=settings.retrieval_mode,
+        vector_index=vector_index,
+    )
     prompt_builder = PromptBuilder()
     llm_client = TemplateLLMClient()
     prompt_analyzer = PromptAnalyzer(prompt_builder=prompt_builder, llm_client=llm_client)
@@ -66,4 +83,3 @@ def build_container(settings: Settings | None = None) -> ApplicationContainer:
     )
 
     return ApplicationContainer(settings=settings, review_service=review_service)
-

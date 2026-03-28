@@ -3,7 +3,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, Field
 
-from models.review import Review, ReviewListItem, RiskAnalysis
+from models.review import Review, ReviewListItem, RiskAnalysis, RiskReference
 
 
 class AnalyzeTextRequest(BaseModel):
@@ -11,6 +11,29 @@ class AnalyzeTextRequest(BaseModel):
 
     document_name: str = Field(..., min_length=1, max_length=255)
     text: str = Field(..., min_length=1)
+
+
+class DeleteReviewResponse(BaseModel):
+    """Delete operation result."""
+
+    review_id: str
+    deleted: bool
+
+
+class RiskReferenceResponse(BaseModel):
+    """Structured legal reference for API responses."""
+
+    title: str
+    source: str
+    content: str
+
+    @classmethod
+    def from_domain(cls, reference: RiskReference) -> "RiskReferenceResponse":
+        return cls(
+            title=reference.title,
+            source=reference.source,
+            content=reference.content,
+        )
 
 
 class RiskItemResponse(BaseModel):
@@ -25,6 +48,7 @@ class RiskItemResponse(BaseModel):
     impact_analysis: str
     suggestion: str
     replacement_text: str
+    references: list[RiskReferenceResponse]
 
     @classmethod
     def from_domain(cls, risk: RiskAnalysis) -> "RiskItemResponse":
@@ -38,6 +62,7 @@ class RiskItemResponse(BaseModel):
             impact_analysis=risk.impact_analysis,
             suggestion=risk.suggestion,
             replacement_text=risk.replacement_text,
+            references=[RiskReferenceResponse.from_domain(item) for item in risk.references],
         )
 
 
@@ -89,7 +114,21 @@ class ReviewListResponse(BaseModel):
     """Paginated review list response."""
 
     items: list[ReviewListItemResponse]
+    total: int
+    limit: int
+    offset: int
 
     @classmethod
-    def from_domain(cls, items: list[ReviewListItem]) -> "ReviewListResponse":
-        return cls(items=[ReviewListItemResponse.from_domain(item) for item in items])
+    def from_domain(
+        cls,
+        items: list[ReviewListItem],
+        total: int,
+        limit: int,
+        offset: int,
+    ) -> "ReviewListResponse":
+        return cls(
+            items=[ReviewListItemResponse.from_domain(item) for item in items],
+            total=total,
+            limit=limit,
+            offset=offset,
+        )
