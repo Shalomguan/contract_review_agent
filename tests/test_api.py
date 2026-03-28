@@ -1,6 +1,7 @@
 """API integration tests for the MVP."""
 from __future__ import annotations
 
+import re
 import sqlite3
 from datetime import date, timedelta
 from pathlib import Path
@@ -74,7 +75,7 @@ def test_analyze_text_creates_review(tmp_path: Path) -> None:
     client = build_test_client(tmp_path)
     payload = create_review(client, "sample_contract.txt")
 
-    assert payload["document_name"] == "sample_contract.txt"
+    assert re.fullmatch(r"contract\d{8}-\d{4}(?:-\d+)?", payload["document_name"])
     assert payload["review_id"]
     assert payload["risks"]
     assert {risk["risk_level"] for risk in payload["risks"]}.issubset({"high", "medium", "low"})
@@ -97,14 +98,14 @@ def test_upload_txt_file_is_supported(tmp_path: Path) -> None:
 
     assert response.status_code == 200
     payload = response.json()
-    assert payload["document_name"] == "sample_contract.txt"
+    assert re.fullmatch(r"contract\d{8}-\d{4}(?:-\d+)?\.txt", payload["document_name"])
     assert len(payload["risks"]) >= 1
     assert payload["risks"][0]["references"]
 
 
 def test_list_reviews_returns_history(tmp_path: Path) -> None:
     client = build_test_client(tmp_path)
-    create_review(client, "contract_a.txt")
+    first = create_review(client, "contract_a.txt")
     create_review(client, "contract_b.txt", SAFE_CONTRACT)
 
     response = client.get("/api/reviews")
@@ -112,7 +113,8 @@ def test_list_reviews_returns_history(tmp_path: Path) -> None:
     payload = response.json()
     items = payload["items"]
     assert len(items) == 2
-    assert {item["document_name"] for item in items} == {"contract_a.txt", "contract_b.txt"}
+    assert all(item["document_name"].startswith("contract") for item in items)
+    assert any(item["clause_text"] for item in items if item["review_id"] == first["review_id"])
     assert payload["total"] == 2
     assert payload["limit"] == 20
     assert payload["offset"] == 0
@@ -120,14 +122,27 @@ def test_list_reviews_returns_history(tmp_path: Path) -> None:
 
 def test_list_reviews_supports_document_name_search(tmp_path: Path) -> None:
     client = build_test_client(tmp_path)
-    create_review(client, "procurement_contract.docx")
+    first = create_review(client, "procurement_contract.docx")
     create_review(client, "employment_contract.docx")
 
-    response = client.get("/api/reviews", params={"document_name": "procurement"})
+    searchable_fragment = first["document_name"][8:17]
+    response = client.get("/api/reviews", params={"document_name": searchable_fragment})
     assert response.status_code == 200
     items = response.json()["items"]
-    assert len(items) == 1
-    assert items[0]["document_name"] == "procurement_contract.docx"
+    assert len(items) >= 1
+    assert any(item["review_id"] == first["review_id"] for item in items)
+
+
+def test_history_items_include_primary_clause_preview(tmp_path: Path) -> None:
+    client = build_test_client(tmp_path)
+    created = create_review(client, "preview_contract.txt", GENERIC_RISKY_CONTRACT)
+
+    response = client.get("/api/reviews")
+    assert response.status_code == 200
+    item = next(item for item in response.json()["items"] if item["review_id"] == created["review_id"])
+    assert item["clause_title"]
+    assert item["clause_text"]
+    assert "甲方有权随时调整价格" in item["clause_text"] or "自动续约" in item["clause_text"]
 
 
 def test_list_reviews_supports_risk_level_filter_and_pagination(tmp_path: Path) -> None:

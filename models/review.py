@@ -83,6 +83,8 @@ class ReviewListItem:
     summary: str
     created_at: datetime
     risk_counts: dict[str, int]
+    clause_title: str | None = None
+    clause_text: str | None = None
 
 
 @dataclass(slots=True)

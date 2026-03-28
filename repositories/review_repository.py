@@ -70,7 +70,7 @@ class ReviewRepository:
         where_clause, params = self._build_list_filters(filters)
 
         query = [
-            "SELECT review_id, document_id, document_name, summary, created_at, risk_counts",
+            "SELECT review_id, document_id, document_name, summary, created_at, risk_counts, review_payload",
             "FROM reviews",
         ]
         if where_clause:
@@ -95,6 +95,7 @@ class ReviewRepository:
         items: list[ReviewListItem] = []
         for row in rows:
             risk_counts = json.loads(row["risk_counts"])
+            clause_title, clause_text = self._extract_history_clause(json.loads(row["review_payload"]))
             items.append(
                 ReviewListItem(
                     review_id=row["review_id"],
@@ -103,6 +104,8 @@ class ReviewRepository:
                     summary=self._normalize_summary(row["summary"], risk_counts),
                     created_at=datetime.fromisoformat(row["created_at"]),
                     risk_counts=risk_counts,
+                    clause_title=clause_title,
+                    clause_text=clause_text,
                 )
             )
         return items, int(total_row["total"] if total_row else 0)
@@ -180,6 +183,14 @@ class ReviewRepository:
             + f"medium {risk_counts.get('medium', 0)} 个，"
             + f"low {risk_counts.get('low', 0)} 个。"
         )
+
+    def _extract_history_clause(self, payload: dict) -> tuple[str | None, str | None]:
+        risks = payload.get("risks") or []
+        if not risks:
+            return None, None
+
+        first_risk = risks[0]
+        return first_risk.get("clause_title"), first_risk.get("clause_text")
 
     def _looks_garbled(self, summary: str) -> bool:
         if not summary:

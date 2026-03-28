@@ -365,88 +365,136 @@
 
         .risk-list {
             display: grid;
-            gap: 14px;
+            gap: 16px;
         }
 
         .clause-group {
-            border-radius: 18px;
-            border: 1px solid var(--border);
-            background: #ffffff;
+            border-radius: 22px;
+            border: 1px solid rgba(217, 224, 231, 0.95);
+            background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+            box-shadow: 0 16px 34px rgba(15, 23, 42, 0.05);
             overflow: hidden;
         }
 
         .clause-group-head {
             display: grid;
-            gap: 10px;
-            padding: 18px;
-            background: linear-gradient(180deg, #fbfdff 0%, #f7fafc 100%);
-            border-bottom: 1px solid var(--border);
+            gap: 12px;
+            padding: 22px 22px 18px;
+            background: linear-gradient(180deg, #fcfdff 0%, #f7fafc 100%);
+            border-bottom: 1px solid rgba(217, 224, 231, 0.8);
         }
 
         .clause-group-top {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            gap: 14px;
+            gap: 16px;
         }
 
         .clause-title {
-            font-size: 18px;
+            font-size: 19px;
             font-weight: 700;
+            line-height: 1.4;
         }
 
         .clause-meta {
             color: var(--muted);
             font-size: 13px;
+            margin-top: 4px;
         }
 
-        .clause-text {
-            background: #ffffff;
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 14px 16px;
+        .clause-summary {
+            color: var(--muted);
             line-height: 1.75;
-            white-space: pre-wrap;
-            word-break: break-word;
+            background: rgba(255, 255, 255, 0.88);
+            border: 1px solid rgba(217, 224, 231, 0.9);
+            border-radius: 16px;
+            padding: 14px 16px;
+        }
+
+        .history-clause-toggle,
+        .clause-text-toggle,
+        .risk-details,
+        .reference-details {
+            border: 1px solid rgba(217, 224, 231, 0.9);
+            border-radius: 16px;
+            background: #ffffff;
+        }
+
+        .history-clause-toggle summary,
+        .clause-text-toggle summary,
+        .risk-details summary,
+        .reference-details summary {
+            list-style: none;
+            cursor: pointer;
+        }
+
+        .history-clause-toggle summary::-webkit-details-marker,
+        .clause-text-toggle summary::-webkit-details-marker,
+        .risk-details summary::-webkit-details-marker,
+        .reference-details summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .clause-text-toggle summary {
+            padding: 14px 16px;
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .history-clause-toggle .detail-content,
+        .clause-text-toggle .field-value,
+        .risk-details .detail-content,
+        .reference-details .detail-content {
+            border-top: 1px solid rgba(217, 224, 231, 0.8);
         }
 
         .clause-risk-list {
             display: grid;
-            gap: 14px;
-            padding: 18px;
+            gap: 16px;
+            padding: 18px 22px 22px;
         }
 
         .risk-card {
-            border-radius: 16px;
-            border: 1px solid var(--border);
-            overflow: hidden;
+            border-radius: 18px;
+            border: 1px solid rgba(217, 224, 231, 0.9);
             background: #ffffff;
+            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+            overflow: hidden;
         }
 
         .risk-card.high {
-            border-color: rgba(180, 35, 24, 0.24);
+            border-color: rgba(180, 35, 24, 0.22);
         }
 
         .risk-card.medium {
-            border-color: rgba(178, 106, 0, 0.24);
+            border-color: rgba(178, 106, 0, 0.2);
         }
 
         .risk-card.low {
-            border-color: rgba(21, 115, 71, 0.24);
+            border-color: rgba(21, 115, 71, 0.18);
         }
 
         .risk-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 18px 18px 10px;
+        }
+
+        .risk-header-main {
+            display: flex;
             gap: 12px;
-            padding: 14px 16px;
-            border-bottom: 1px solid var(--border);
+            align-items: flex-start;
+            min-width: 0;
         }
 
         .risk-title {
             font-weight: 700;
-            font-size: 16px;
+            font-size: 17px;
+            line-height: 1.45;
+            margin: 0;
         }
 
         .risk-subtitle {
@@ -459,26 +507,27 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            min-width: 30px;
-            height: 30px;
+            min-width: 34px;
+            height: 34px;
             border-radius: 999px;
             background: var(--accent-soft);
             color: var(--accent);
             font-size: 13px;
             font-weight: 700;
+            flex-shrink: 0;
         }
 
         .badge {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            min-width: 76px;
-            padding: 6px 10px;
+            min-width: 88px;
+            padding: 7px 12px;
             border-radius: 999px;
             font-size: 12px;
             font-weight: 700;
-            text-transform: uppercase;
             letter-spacing: 0.04em;
+            flex-shrink: 0;
         }
 
         .badge.high {
@@ -497,9 +546,70 @@
         }
 
         .risk-body {
+            display: grid;
+            gap: 14px;
+            padding: 0 18px 18px;
+        }
+
+        .risk-summary-grid {
+            display: grid;
+            gap: 12px;
+        }
+
+        .summary-block {
+            background: var(--panel-soft);
+            border: 1px solid rgba(217, 224, 231, 0.85);
+            border-radius: 16px;
+            padding: 14px 16px;
+        }
+
+        .summary-label {
+            font-size: 12px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 8px;
+        }
+
+        .summary-value {
+            line-height: 1.75;
+            font-size: 15px;
+        }
+
+        .risk-actions {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .detail-toggle {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .detail-toggle::after {
+            content: '展开';
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .history-clause-toggle[open] summary::after,
+        .risk-details[open] .detail-toggle::after,
+        .reference-details[open] summary::after,
+        .clause-text-toggle[open] summary::after {
+            content: '收起';
+        }
+
+        .detail-content {
             padding: 16px;
             display: grid;
             gap: 14px;
+            background: #fbfcfe;
         }
 
         .field {
@@ -516,12 +626,31 @@
 
         .field-value {
             line-height: 1.75;
-            background: var(--panel-soft);
-            border: 1px solid var(--border);
+            background: #ffffff;
+            border: 1px solid rgba(217, 224, 231, 0.9);
             border-radius: 12px;
             padding: 12px 14px;
             white-space: pre-wrap;
             word-break: break-word;
+        }
+
+        .reference-details summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .history-clause-toggle summary::after,
+        .reference-details summary::after,
+        .clause-text-toggle summary::after {
+            content: '展开';
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 600;
         }
 
         .references {
@@ -530,10 +659,10 @@
         }
 
         .reference-item {
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 12px 14px;
-            background: #fbfcfd;
+            border: 1px solid rgba(217, 224, 231, 0.9);
+            border-radius: 14px;
+            padding: 14px 16px;
+            background: #ffffff;
         }
 
         .reference-title {
@@ -717,7 +846,7 @@
                     <div class="panel-head">
                         <div>
                             <h2>风险条目</h2>
-                            <div class="muted">风险详情和参考依据全部展开显示</div>
+                            <div class="muted">先看结论和建议，完整分析可按需展开</div>
                         </div>
                         <div class="filters" id="riskFilters">
                             <button class="filter-chip active" type="button" data-filter="all">全部</button>
@@ -877,6 +1006,80 @@
             `).join("")}</div>`;
         }
 
+        function truncateText(text, maxLength = 120) {
+            const normalized = String(text || '').replace(/\s+/g, ' ').trim();
+            if (!normalized) {
+                return '';
+            }
+            return normalized.length > maxLength ? `${normalized.slice(0, maxLength)}...` : normalized;
+        }
+
+        function summarizeReason(text) {
+            return truncateText(text, 78) || '系统已识别该条款存在进一步审查风险。';
+        }
+
+        function summarizeSuggestion(text) {
+            return truncateText(text, 78) || '建议结合交易背景和双方权责对条款进行修订。';
+        }
+
+        function renderClausePreview(clauseText) {
+            const preview = truncateText(clauseText, 180) || '当前条款原文为空。';
+            return `<div class="clause-summary">${escapeHtml(preview)}</div>`;
+        }
+
+        function renderHistoryClause(item) {
+            if (!item?.clause_text) {
+                return "";
+            }
+
+            const title = item.clause_title || "命中条款";
+            const preview = truncateText(item.clause_text, 120);
+            return `
+                <details class="history-clause-toggle">
+                    <summary>查看命中条款</summary>
+                    <div class="detail-content">
+                        <div class="field">
+                            <div class="field-label">${escapeHtml(title)}</div>
+                            <div class="field-value">${escapeHtml(preview)}</div>
+                        </div>
+                        <div class="field">
+                            <div class="field-label">条款原文</div>
+                            <div class="field-value">${escapeHtml(item.clause_text)}</div>
+                        </div>
+                    </div>
+                </details>
+            `;
+        }
+
+        function renderRiskDetails(risk) {
+            return `
+                <details class="risk-details">
+                    <summary class="detail-toggle">查看完整分析</summary>
+                    <div class="detail-content">
+                        <div class="field">
+                            <div class="field-label">完整修改建议</div>
+                            <div class="field-value">${escapeHtml(risk.suggestion || '')}</div>
+                        </div>
+                        <div class="field">
+                            <div class="field-label">替代文本</div>
+                            <div class="field-value">${escapeHtml(risk.replacement_text || '')}</div>
+                        </div>
+                        <div class="field">
+                            <div class="field-label">影响分析</div>
+                            <div class="field-value">${escapeHtml(risk.impact_analysis || '')}</div>
+                        </div>
+                        <div class="field">
+                            <div class="field-label">参考依据</div>
+                            <details class="reference-details">
+                                <summary>查看参考依据（${(risk.references || []).length}）</summary>
+                                <div class="detail-content">${renderReferences(risk.references)}</div>
+                            </details>
+                        </div>
+                    </div>
+                </details>
+            `;
+        }
+
         function groupRisksByClause(risks) {
             const groups = new Map();
 
@@ -923,41 +1126,34 @@
                                 <div class="clause-meta">${escapeHtml(group.clauseId || "条款编号未标注")} · 共 ${group.risks.length} 个风险点</div>
                             </div>
                         </div>
-                        <div class="clause-text">${escapeHtml(group.clauseText || "当前条款原文为空。")}</div>
+                        ${renderClausePreview(group.clauseText)}
                     </div>
                     <div class="clause-risk-list">
                         ${group.risks.map((risk, index) => `
                             <article class="risk-card ${escapeHtml(risk.risk_level || "low")}">
                                 <div class="risk-header">
-                                    <div style="display:flex; gap:12px; align-items:flex-start;">
+                                    <div class="risk-header-main">
                                         <span class="risk-index">${index + 1}</span>
                                         <div>
                                             <div class="risk-title">${escapeHtml(formatRiskType(risk.risk_type))}</div>
-                                            <div class="risk-subtitle">系统识别出的风险点</div>
+                                            <div class="risk-subtitle">优先看风险结论和修改方向</div>
                                         </div>
                                     </div>
                                     <span class="badge ${escapeHtml(risk.risk_level || "low")}">${escapeHtml(levelLabels[risk.risk_level] || "低风险")}</span>
                                 </div>
                                 <div class="risk-body">
-                                    <div class="field">
-                                        <div class="field-label">风险原因</div>
-                                        <div class="field-value">${escapeHtml(risk.risk_reason || "")}</div>
+                                    <div class="risk-summary-grid">
+                                        <div class="summary-block">
+                                            <div class="summary-label">风险结论</div>
+                                            <div class="summary-value">${escapeHtml(summarizeReason(risk.risk_reason))}</div>
+                                        </div>
+                                        <div class="summary-block">
+                                            <div class="summary-label">修改建议</div>
+                                            <div class="summary-value">${escapeHtml(summarizeSuggestion(risk.suggestion))}</div>
+                                        </div>
                                     </div>
-                                    <div class="field">
-                                        <div class="field-label">影响分析</div>
-                                        <div class="field-value">${escapeHtml(risk.impact_analysis || "")}</div>
-                                    </div>
-                                    <div class="field">
-                                        <div class="field-label">修改建议</div>
-                                        <div class="field-value">${escapeHtml(risk.suggestion || "")}</div>
-                                    </div>
-                                    <div class="field">
-                                        <div class="field-label">替代文本</div>
-                                        <div class="field-value">${escapeHtml(risk.replacement_text || "")}</div>
-                                    </div>
-                                    <div class="field">
-                                        <div class="field-label">参考依据</div>
-                                        ${renderReferences(risk.references)}
+                                    <div class="risk-actions">
+                                        ${renderRiskDetails(risk)}
                                     </div>
                                 </div>
                             </article>
@@ -1268,6 +1464,7 @@
                                 </div>
                             </div>
                             <p class="summary">${escapeHtml(item.summary || "")}</p>
+                            ${renderHistoryClause(item)}
                             <div class="history-actions">
                                 <button class="secondary" type="button" data-action="view" data-review-id="${escapeHtml(item.review_id || "")}">查看详情</button>
                                 <button class="ghost" type="button" data-action="delete" data-review-id="${escapeHtml(item.review_id || "")}">删除</button>

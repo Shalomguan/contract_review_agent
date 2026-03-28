@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from collections import Counter
+from collections import defaultdict
 from datetime import date, datetime, time, timezone
 from pathlib import Path
 from uuid import uuid4
@@ -31,25 +32,28 @@ class ReviewService:
         self.splitter = splitter
         self.risk_analyzer = risk_analyzer
         self.review_repository = review_repository
+        self._document_name_counters: dict[str, int] = defaultdict(int)
 
     def analyze_upload(self, filename: str, content: bytes) -> Review:
         """Analyze an uploaded contract file."""
         parser_result = self.parser_factory.parse(filename=filename, content=content)
-        self._persist_upload(filename=filename, content=content)
+        generated_name = self._generate_document_name(filename)
+        self._persist_upload(filename=generated_name, content=content)
         return self._analyze_document(
-            document_name=filename,
+            document_name=generated_name,
             text=parser_result.text,
             content_type=parser_result.content_type,
-            metadata=parser_result.metadata,
+            metadata={**parser_result.metadata, "original_filename": filename},
         )
 
     def analyze_text(self, document_name: str, text: str) -> Review:
         """Analyze contract text submitted directly by API callers."""
+        generated_name = self._generate_document_name()
         return self._analyze_document(
-            document_name=document_name,
+            document_name=generated_name,
             text=text,
             content_type="text/plain",
-            metadata={},
+            metadata={"submitted_name": document_name},
         )
 
     def get_review(self, review_id: str) -> Review | None:
@@ -105,6 +109,16 @@ class ReviewService:
         )
         self.review_repository.save(review)
         return review
+
+    def _generate_document_name(self, original_name: str | None = None) -> str:
+        """Generate a readable timestamp-based document name."""
+        timestamp = datetime.now().strftime("%Y%m%d-%H%M")
+        base_name = f"contract{timestamp}"
+        self._document_name_counters[base_name] += 1
+        counter = self._document_name_counters[base_name]
+        suffix = "" if counter == 1 else f"-{counter}"
+        extension = Path(original_name).suffix.lower() if original_name else ""
+        return f"{base_name}{suffix}{extension}"
 
     def _persist_upload(self, filename: str, content: bytes) -> None:
         """Store the original upload for traceability."""
