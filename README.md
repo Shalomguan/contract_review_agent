@@ -6,6 +6,14 @@
 
 当前版本已经具备一条完整的可运行链路：
 
+当前知识库已经升级为双层结构，当前共 56 条条目：
+
+- 审查规则层：`review_rule`、`drafting_guidance`、`balanced_clause`
+- 法律依据层：`legal_basis`
+
+检索时会优先返回与风险类型最相关的知识条目，并在可能时同时带出审查规则和法律依据。前端会把 `references` 区分展示为“审查规则”或“法律依据”。
+
+
 - 上传或粘贴合同文本
 - 解析 PDF / DOCX / TXT / 图片
 - 按条款切分合同
@@ -20,9 +28,13 @@
 
 ### 后端能力
 
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `GET /api/auth/me`
 - `POST /api/review/upload`
 - `POST /api/review/analyze`
 - `GET /api/review/{review_id}`
+- `GET /api/review/{review_id}/export`
 - `DELETE /api/review/{review_id}`
 - `GET /api/reviews`
 - `GET /health`
@@ -44,10 +56,11 @@
 
 ### 前端页面
 
+- 登录页：`/login`
 - 用户页：`/`
 - 测试页：`/lab`
 
-用户页用于正常使用，测试页保留更完整的联调视图。
+登录页用于注册和登录，用户页用于正常使用，测试页保留更完整的联调视图。
 
 ## 项目结构
 
@@ -136,6 +149,55 @@ contract_review_agent/
 - `medium`
 - `low`
 
+## 鉴权与登录
+
+当前版本已接入轻量用户鉴权，审查相关接口均要求 Bearer Token。
+
+认证接口：
+
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `GET /api/auth/me`
+
+说明：
+
+- 注册后会直接返回 `access_token`
+- 登录成功后也会返回 `access_token`
+- `/api/review/*` 和 `/api/reviews`、`DELETE /api/review/{review_id}` 都需要在请求头中携带：
+
+```text
+Authorization: Bearer <access_token>
+```
+
+前端页面：
+
+- 登录页：`http://localhost:8000/login`
+- 用户页：`http://localhost:8000/`
+- 测试页：`http://localhost:8000/lab`
+
+用户页未登录时会自动跳转到登录页；测试页仍保留内嵌登录区，便于联调。登录页注册时要求输入确认密码。
+
+### 登录与审查完整流程
+
+1. 打开登录页：`http://localhost:8000/login`
+2. 首次使用时输入：
+   - 用户名
+   - 密码
+   - 确认密码
+3. 点击“注册并登录”，成功后会自动跳转到用户页 `/`
+4. 后续使用可直接输入用户名和密码后点击“登录”
+5. 登录成功后即可：
+   - 在用户页提交合同文本
+   - 上传文件进行审查
+   - 查看和删除自己的历史记录
+6. 如需通过 Postman 或脚本调用接口，先调用：
+   - `POST /api/auth/login`
+7. 从返回结果中取出 `access_token`，并在后续请求头中携带：
+
+```text
+Authorization: Bearer <access_token>
+```
+
 ## API 说明
 
 ### `POST /api/review/upload`
@@ -171,6 +233,21 @@ contract_review_agent/
 ### `GET /api/review/{review_id}`
 
 获取单条审查记录详情。
+
+### `GET /api/review/{review_id}/export`
+
+导出单条审查记录。
+
+支持参数：
+
+- `format=markdown`
+- `format=html`
+
+说明：
+
+- 需要 Bearer Token
+- 返回附件下载响应
+- 可用于法务留档、邮件发送或二次加工
 
 ### `DELETE /api/review/{review_id}`
 
@@ -295,10 +372,10 @@ contract_review_agent/
 pip install -r requirements.txt
 ```
 
-如需单独安装本地 embedding 关键依赖：
+如需单独安装本地 embedding 与 PDF 解析关键依赖：
 
 ```bash
-pip install numpy==1.26.4 sentence-transformers==3.0.1
+pip install numpy==1.26.4 sentence-transformers==3.0.1 pypdf==4.1.0
 ```
 
 复制环境变量模板：
@@ -315,6 +392,7 @@ uvicorn main:app --reload --host 0.0.0.0 --port 8000
 
 访问地址：
 
+- 登录页：`http://localhost:8000/login`
 - 用户页：`http://localhost:8000/`
 - 测试页：`http://localhost:8000/lab`
 - Swagger：`http://localhost:8000/docs`
@@ -399,7 +477,7 @@ pytest -q
 
 当前回归结果：
 
-- `47 passed`
+- `56 passed`
 
 ## Postman
 
@@ -417,13 +495,20 @@ pytest -q
 - 样例合同：[docs/sample_contract.txt](docs/sample_contract.txt)
 - 架构说明：[docs/architecture.md](docs/architecture.md)
 - 本地知识库：[docs/legal_knowledge_base.json](docs/legal_knowledge_base.json)
+- 知识库扩充模板：[docs/knowledge_base_template.md](docs/knowledge_base_template.md)
 - Postman Collection：[docs/postman_collection.json](docs/postman_collection.json)
 
 ## 当前前端说明
 
+### 登录页 `/login`
+
+- 面向用户登录和注册
+- 登录成功后自动跳转到用户页
+
 ### 用户页 `/`
 
 - 面向正常使用
+- 未登录时自动跳转到登录页
 - 支持文本分析、文件上传、历史检索
 - 展示审查摘要、合同原文、风险条目
 - 风险条目采用“摘要卡片 + 展开详情”
@@ -431,7 +516,14 @@ pytest -q
 ### 测试页 `/lab`
 
 - 面向内部排查和联调
-- 保留更完整的测试视图
+- 保留更完整的测试视图和内嵌登录区
+
+## 最近修复
+
+- 历史日期筛选按 `Asia/Shanghai` 本地日界线解释
+- 历史文件名搜索同时支持系统生成名和原始提交名
+- 历史详情支持对旧记录回退显示命中条款拼接文本
+- PDF 解析代码已切换为优先使用 `pypdf`，并保留兼容 fallback
 
 ## 后续迭代建议
 
