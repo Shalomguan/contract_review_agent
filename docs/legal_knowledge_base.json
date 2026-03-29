@@ -10,7 +10,7 @@
     ],
     "content": "一方不得通过笼统免责条款免除其因违约、过错或供应缺陷应承担的主要责任。",
     "id": "knowledge_001",
-    "category": "general_contract_review",
+    "category": "review_rule",
     "jurisdiction": "CN",
     "updated_at": "2026-03-28"
   },
@@ -25,7 +25,7 @@
     ],
     "content": "解除权一般应与重大违约、法定解除情形或明确约定的触发条件挂钩。",
     "id": "knowledge_002",
-    "category": "general_contract_review",
+    "category": "review_rule",
     "jurisdiction": "CN",
     "updated_at": "2026-03-28"
   },
@@ -41,7 +41,7 @@
     ],
     "content": "违约金或滞纳金明显过高时，存在被调整或不被完整支持的风险。",
     "id": "knowledge_003",
-    "category": "general_contract_review",
+    "category": "review_rule",
     "jurisdiction": "CN",
     "updated_at": "2026-03-28"
   },
@@ -55,7 +55,7 @@
     ],
     "content": "如合同条款存在争议，不宜由一方单方作出最终解释或约束对方。",
     "id": "knowledge_004",
-    "category": "general_contract_review",
+    "category": "review_rule",
     "jurisdiction": "CN",
     "updated_at": "2026-03-28"
   },
@@ -70,7 +70,7 @@
     ],
     "content": "对已有成果、定制化成果和后续使用授权应进行区分约定，避免无差别归属于一方。",
     "id": "knowledge_005",
-    "category": "general_contract_review",
+    "category": "review_rule",
     "jurisdiction": "CN",
     "updated_at": "2026-03-28"
   },
@@ -85,7 +85,7 @@
     ],
     "content": "争议解决条款不宜以显著增加一方诉讼成本的方式设定管辖地点。",
     "id": "knowledge_006",
-    "category": "general_contract_review",
+    "category": "review_rule",
     "jurisdiction": "CN",
     "updated_at": "2026-03-28"
   },
@@ -100,7 +100,7 @@
     ],
     "content": "自动续约应设置明确提醒和合理退出期，避免当事人因忽视条款而被动续约。",
     "id": "knowledge_007",
-    "category": "general_contract_review",
+    "category": "review_rule",
     "jurisdiction": "CN",
     "updated_at": "2026-03-28"
   },
@@ -115,7 +115,7 @@
     ],
     "content": "对价格、规则和标准的重大变更原则上应经双方同意，单方变更容易导致对价失衡。",
     "id": "knowledge_008",
-    "category": "general_contract_review",
+    "category": "review_rule",
     "jurisdiction": "CN",
     "updated_at": "2026-03-28"
   },
@@ -130,7 +130,7 @@
     ],
     "content": "付款安排应与交付成果和双方可验证的确认节点挂钩，过高预付或单方确认会引入失衡风险。",
     "id": "knowledge_009",
-    "category": "general_contract_review",
+    "category": "review_rule",
     "jurisdiction": "CN",
     "updated_at": "2026-03-28"
   },
@@ -145,7 +145,7 @@
     ],
     "content": "验收条款应包含可操作的标准、期限和异议处理机制，不宜完全交由一方单方认定。",
     "id": "knowledge_010",
-    "category": "general_contract_review",
+    "category": "review_rule",
     "jurisdiction": "CN",
     "updated_at": "2026-03-28"
   },
@@ -160,7 +160,7 @@
     ],
     "content": "保密义务通常应由接触未公开信息的双方共同承担，并设置合理期限与例外。",
     "id": "knowledge_011",
-    "category": "general_contract_review",
+    "category": "review_rule",
     "jurisdiction": "CN",
     "updated_at": "2026-03-28"
   },
@@ -175,7 +175,7 @@
     ],
     "content": "独家或竞业条款应同时限定地域、客户范围、期限和补偿安排，否则容易构成过度约束。",
     "id": "knowledge_012",
-    "category": "general_contract_review",
+    "category": "review_rule",
     "jurisdiction": "CN",
     "updated_at": "2026-03-28"
   },
@@ -190,7 +190,7 @@
     ],
     "content": "通知或送达条款应以可证明的签收、回执或已阅记录作为生效依据。",
     "id": "knowledge_013",
-    "category": "general_contract_review",
+    "category": "review_rule",
     "jurisdiction": "CN",
     "updated_at": "2026-03-28"
   },
@@ -205,7 +205,7 @@
     ],
     "content": "解约成本应以已发生的实际损失为基础，不宜笼统要求一次性支付未履行全部期间的对价。",
     "id": "knowledge_014",
-    "category": "general_contract_review",
+    "category": "review_rule",
     "jurisdiction": "CN",
     "updated_at": "2026-03-28"
   },
@@ -220,7 +220,7 @@
     ],
     "content": "责任分配应与各方的管控能力、违约行为和过错程度相匹配，避免将主要风险完全集中给一方。",
     "id": "knowledge_015",
-    "category": "general_contract_review",
+    "category": "review_rule",
     "jurisdiction": "CN",
     "updated_at": "2026-03-28"
   },
@@ -236,8 +236,647 @@
     ],
     "content": "合同若仅提及交付、验收或付款主题，但缺少标准、时间节点或处理流程，则属于需要人工复核的模糊风险。",
     "id": "knowledge_016",
-    "category": "general_contract_review",
+    "category": "review_rule",
     "jurisdiction": "CN",
     "updated_at": "2026-03-28"
+  },
+  {
+    "id": "knowledge_017",
+    "category": "drafting_guidance",
+    "risk_type": "payment_imbalance",
+    "title": "付款比例不宜显著前置",
+    "source": "费用条款审查指引",
+    "keywords": [
+      "预付款",
+      "全额付款",
+      "签约即付",
+      "先付款后交付"
+    ],
+    "content": "若合同要求一方在签约后短时间内支付大部分或全部价款，而另一方尚未完成主要交付，通常会造成对价与履约节奏失衡。更稳妥的做法是将预付款控制在合理比例，并将主要价款与里程碑或验收结果挂钩。",
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-29"
+  },
+  {
+    "id": "knowledge_018",
+    "category": "balanced_clause",
+    "risk_type": "payment_imbalance",
+    "title": "分阶段付款的平衡表达",
+    "source": "通用合同审查规则",
+    "keywords": [
+      "阶段付款",
+      "里程碑付款",
+      "验收后付款",
+      "尾款"
+    ],
+    "content": "较平衡的付款条款通常会把预付款、阶段款和尾款拆分处理，并明确每一阶段对应的交付成果、验收期限和付款期限。这样可以降低一方过早承担全部现金流压力的风险。",
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-29"
+  },
+  {
+    "id": "knowledge_019",
+    "category": "drafting_guidance",
+    "risk_type": "acceptance_unfairness",
+    "title": "验收应包含期限和异议机制",
+    "source": "交付与验收条款指引",
+    "keywords": [
+      "验收期限",
+      "提出异议",
+      "整改",
+      "验收标准"
+    ],
+    "content": "如果合同只写“由甲方验收确认”而没有验收期限、异议提出方式和整改闭环，验收权很容易演变为单方否决权。验收条款应同时约定验收标准、验收时间、异议反馈路径和复验安排。",
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-29"
+  },
+  {
+    "id": "knowledge_020",
+    "category": "balanced_clause",
+    "risk_type": "acceptance_unfairness",
+    "title": "默认验收规则应谨慎设置",
+    "source": "通用合同风险指引",
+    "keywords": [
+      "默认验收",
+      "视为验收合格",
+      "逾期未反馈"
+    ],
+    "content": "默认验收规则并非当然失衡，但前提是同时约定合理的验收期限、明确的交付标准和有效的通知方式。若缺少这些前提，仅设置“逾期未反馈视为合格”容易放大一方程序优势。",
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-29"
+  },
+  {
+    "id": "knowledge_021",
+    "category": "drafting_guidance",
+    "risk_type": "confidentiality_imbalance",
+    "title": "保密义务应覆盖接收信息的双方",
+    "source": "保密条款审查指引",
+    "keywords": [
+      "双方保密",
+      "接收方",
+      "商业秘密",
+      "保密义务"
+    ],
+    "content": "在双边交易中，只要双方都有可能接触对方的未公开信息，保密义务通常就应按信息接收方来设置，而不是仅约束某一固定主体。单边保密条款容易使信息披露责任与权利边界失衡。",
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-29"
+  },
+  {
+    "id": "knowledge_022",
+    "category": "review_rule",
+    "risk_type": "confidentiality_imbalance",
+    "title": "无限期保密需要合理边界",
+    "source": "商业秘密保护审查要点",
+    "keywords": [
+      "永久保密",
+      "无限期",
+      "保密期限",
+      "例外情形"
+    ],
+    "content": "保密期限并非绝对不能较长，但若条款写成永久、无限期且完全没有法定披露、已公开信息或独立开发等例外，执行成本和争议风险都会显著上升。合理条款应同时约定期限与例外。",
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-29"
+  },
+  {
+    "id": "knowledge_023",
+    "category": "review_rule",
+    "risk_type": "unilateral_change_right",
+    "title": "重大变更应以双方协商一致为前提",
+    "source": "通用合同风险指引",
+    "keywords": [
+      "修改规则",
+      "调整价格",
+      "变更标准",
+      "甲方有权调整"
+    ],
+    "content": "涉及价格、服务范围、履约标准、交付节点等核心商业条款的变更，通常应以双方协商一致为前提。如果允许一方单方直接调整并要求对方继续履行，风险通常较高。",
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-29"
+  },
+  {
+    "id": "knowledge_024",
+    "category": "balanced_clause",
+    "risk_type": "unilateral_change_right",
+    "title": "程序性变更与实质性变更应分开处理",
+    "source": "合同条款设计建议",
+    "keywords": [
+      "程序性调整",
+      "实质性变更",
+      "通知期",
+      "书面确认"
+    ],
+    "content": "系统界面、通知方式、联系方式等程序性事项可以约定较灵活的调整机制；但价格、服务内容、责任边界等实质性条款应要求书面确认。把两类变更混在一起，容易形成过宽的单方变更权。",
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-29"
+  },
+  {
+    "id": "knowledge_025",
+    "category": "review_rule",
+    "risk_type": "termination_penalty_unfairness",
+    "title": "提前解约费用应与已发生损失关联",
+    "source": "合同解除与终止指引",
+    "keywords": [
+      "解约费",
+      "违约解除",
+      "剩余服务费",
+      "不退还"
+    ],
+    "content": "提前解约后的费用承担通常应围绕已完成工作量、已发生成本和可证明损失来约定。若条款要求一方在未继续享有服务或未继续履约的情况下仍支付全部剩余对价，往往失衡。",
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-29"
+  },
+  {
+    "id": "knowledge_026",
+    "category": "balanced_clause",
+    "risk_type": "termination_penalty_unfairness",
+    "title": "提前解约可以分场景设置后果",
+    "source": "通用合同审查规则",
+    "keywords": [
+      "提前终止",
+      "便利解除",
+      "重大违约",
+      "退款"
+    ],
+    "content": "较平衡的终止条款会区分便利解除、重大违约解除和法定解除三种场景，并分别约定已完成部分结算、未履行部分停止收费以及合理损失赔偿，而不是一刀切要求支付全部剩余费用。",
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-29"
+  },
+  {
+    "id": "knowledge_027",
+    "category": "review_rule",
+    "risk_type": "biased_dispute_resolution",
+    "title": "争议解决地点不宜显著增加单方维权成本",
+    "source": "诉讼与仲裁条款审查要点",
+    "keywords": [
+      "管辖法院",
+      "争议解决",
+      "甲方所在地",
+      "仲裁地点"
+    ],
+    "content": "争议解决地点的设置应考虑双方履约地、住所地和取证便利性。若一律固定在一方住所地或经营地，且该地点与交易实际联系较弱，容易显著抬高另一方维权成本。",
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-29"
+  },
+  {
+    "id": "knowledge_028",
+    "category": "balanced_clause",
+    "risk_type": "biased_dispute_resolution",
+    "title": "争议解决条款可采用中性连接点",
+    "source": "合同程序条款建议",
+    "keywords": [
+      "被告住所地",
+      "合同履行地",
+      "中立仲裁",
+      "协商解决"
+    ],
+    "content": "较常见的平衡做法包括约定被告住所地法院、合同履行地法院，或选择双方都能接受的中立仲裁机构。这样既保留程序确定性，也能避免明显偏向某一方。",
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-29"
+  },
+  {
+    "id": "knowledge_029",
+    "category": "review_rule",
+    "risk_type": "delivery_or_notice_trap",
+    "title": "送达规则应以可证明方式为基础",
+    "source": "程序条款审查指引",
+    "keywords": [
+      "签收",
+      "回执",
+      "短信通知",
+      "邮件送达"
+    ],
+    "content": "通知和送达条款应尽量依托签收、回执、系统已读或邮件送达记录等可证明方式生效。若仅约定发送即生效，而没有留下对方实际接收或可合理知悉的证据，争议时通常对弱势一方不利。",
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-29"
+  },
+  {
+    "id": "knowledge_030",
+    "category": "balanced_clause",
+    "risk_type": "delivery_or_notice_trap",
+    "title": "通知条款宜约定补充送达路径",
+    "source": "合同程序条款建议",
+    "keywords": [
+      "邮寄",
+      "电子邮件",
+      "补充通知",
+      "联系电话"
+    ],
+    "content": "较平衡的通知条款通常会同时约定多种送达路径，例如电子邮件、快递或系统消息，并明确联系人和地址更新义务。这样可以降低一方因单一送达方式失灵而承担不利后果的风险。",
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-29"
+  },
+  {
+    "id": "knowledge_031",
+    "category": "review_rule",
+    "risk_type": "liability_imbalance",
+    "title": "责任承担应与控制能力和过错相匹配",
+    "source": "通用合同风险指引",
+    "keywords": [
+      "全部责任",
+      "一切损失",
+      "承担全部赔偿",
+      "全部风险"
+    ],
+    "content": "责任条款如果将所有违约、赔偿、第三方索赔和监管风险无差别压给一方，通常意味着责任分配失衡。更合理的做法是按各方的控制能力、过错程度和履约角色区分责任边界。",
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-29"
+  },
+  {
+    "id": "knowledge_032",
+    "category": "balanced_clause",
+    "risk_type": "liability_imbalance",
+    "title": "责任限制与赔偿义务应成体系约定",
+    "source": "责任条款设计建议",
+    "keywords": [
+      "责任上限",
+      "赔偿范围",
+      "直接损失",
+      "可预见损失"
+    ],
+    "content": "较平衡的责任条款通常会同时约定赔偿范围、责任上限、免责例外和间接损失排除，而不是仅要求一方承担全部赔偿责任。把这些边界写清楚，才能避免责任无限扩张。",
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-29"
+  },
+  {
+    "id": "knowledge_033",
+    "category": "review_rule",
+    "risk_type": "auto_renewal_trap",
+    "title": "自动续约应保留合理退出窗口",
+    "source": "合同期限管理规则",
+    "keywords": [
+      "到期自动续期",
+      "续约通知",
+      "退出窗口",
+      "续展"
+    ],
+    "content": "自动续约条款通常应在到期前给予充分提示，并为双方保留合理的退出窗口。若只给出极短异议期限，或完全没有提醒机制，容易导致一方在不知情或准备不足的情况下被动续约。",
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-29"
+  },
+  {
+    "id": "knowledge_034",
+    "category": "balanced_clause",
+    "risk_type": "auto_renewal_trap",
+    "title": "续约条款可改为显式确认模式",
+    "source": "通用合同条款建议",
+    "keywords": [
+      "续约确认",
+      "书面确认续期",
+      "到期续签",
+      "续约申请"
+    ],
+    "content": "在金额较大、服务周期较长或履约内容复杂的合作中，自动续约未必是最佳设计。较稳妥的安排是要求到期前由双方以书面方式确认是否续约，从而减少因默认续期带来的争议。",
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-29"
+  },
+  {
+    "id": "knowledge_035",
+    "category": "review_rule",
+    "risk_type": "one_sided_ip_assignment",
+    "title": "知识产权归属应区分既有成果与定制成果",
+    "source": "知识产权合同审查要点",
+    "keywords": [
+      "既有成果",
+      "定制成果",
+      "背景知识产权",
+      "开发成果"
+    ],
+    "content": "知识产权条款如果不区分一方既有成果、通用能力、背景技术和定制开发成果，而将一切成果统一归另一方所有，通常会超出商业合理边界。应至少区分背景知识产权与项目特定成果。",
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-29"
+  },
+  {
+    "id": "knowledge_036",
+    "category": "balanced_clause",
+    "risk_type": "one_sided_ip_assignment",
+    "title": "成果归属与使用授权可分层安排",
+    "source": "知识产权条款设计建议",
+    "keywords": [
+      "使用授权",
+      "非独占许可",
+      "成果交付",
+      "二次利用"
+    ],
+    "content": "较平衡的安排通常是：项目定制成果可按约定归属委托方，而服务方保留其既有工具、通用模块和方法论，并在必要范围内继续使用。对于无法完全转移的部分，可通过许可方式满足商业目的。",
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-29"
+  },
+  {
+    "id": "knowledge_037",
+    "category": "review_rule",
+    "risk_type": "unilateral_termination",
+    "title": "便利解除不应完全单边且无补偿",
+    "source": "合同解除与终止指引",
+    "keywords": [
+      "随时解除",
+      "单方终止",
+      "无条件终止",
+      "提前通知解除"
+    ],
+    "content": "若合同赋予一方随时无条件解除权，而另一方却没有对等权利或补偿安排，通常会使交易稳定性明显失衡。即便允许便利解除，也宜约定通知期、已完成部分结算和合理损失处理。",
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-29"
+  },
+  {
+    "id": "knowledge_038",
+    "category": "balanced_clause",
+    "risk_type": "unilateral_termination",
+    "title": "解除权应与触发条件和通知期绑定",
+    "source": "通用合同审查规则",
+    "keywords": [
+      "重大违约",
+      "通知期",
+      "解除条件",
+      "补救期"
+    ],
+    "content": "较平衡的解除条款通常会把解除权与重大违约、逾期补救失败或法定情形绑定，并明确通知期与补救期。这样既保留退出机制，也能避免一方毫无预警地终止合作。",
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-29"
+  },
+  {
+    "id": "knowledge_039",
+    "category": "review_rule",
+    "risk_type": "excessive_liquidated_damages",
+    "title": "违约金比例应与实际损失和行业常规相称",
+    "source": "违约责任审查规则",
+    "keywords": [
+      "每日千分之",
+      "每日百分之",
+      "按合同总额",
+      "高额违约金"
+    ],
+    "content": "违约金的设计应综合考虑合同金额、履约周期、违约类型和可预见损失。若约定为合同总额的较高固定比例，或按日累计比例异常偏高，通常会被认定为明显失衡。",
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-29"
+  },
+  {
+    "id": "knowledge_040",
+    "category": "balanced_clause",
+    "risk_type": "excessive_liquidated_damages",
+    "title": "违约责任可区分违约情形分层设置",
+    "source": "责任条款设计建议",
+    "keywords": [
+      "逾期违约",
+      "重大违约",
+      "分层违约责任",
+      "补救期"
+    ],
+    "content": "较稳妥的违约责任设计通常会区分一般逾期、可补救违约和重大根本违约，并对应设置不同责任后果。通过分层设置责任，可以避免因一刀切高额违约金导致条款整体失衡。",
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-29"
+  },
+  {
+    "id": "knowledge_041",
+    "category": "legal_basis",
+    "risk_type": "unilateral_exemption",
+    "title": "格式条款免责需履行提示说明义务",
+    "content": "以格式条款减轻或者免除提供方责任、加重对方责任或者限制对方主要权利的，应当进行合理提示和说明。未尽提示说明义务时，相关免责安排存在不被采纳的风险。",
+    "source": "《中华人民共和国民法典》格式条款规则（概括）",
+    "keywords": [
+      "格式条款",
+      "免责",
+      "提示说明",
+      "主要权利"
+    ],
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-29"
+  },
+  {
+    "id": "knowledge_042",
+    "category": "legal_basis",
+    "risk_type": "excessive_liquidated_damages",
+    "title": "违约金明显过高可请求调整",
+    "content": "合同约定的违约金明显高于实际损失时，当事人可以请求人民法院或者仲裁机构予以适当调整。设置过高比例的违约金会削弱条款稳定性和可执行性。",
+    "source": "《中华人民共和国民法典》违约责任规则（概括）",
+    "keywords": [
+      "违约金",
+      "明显过高",
+      "调整",
+      "实际损失"
+    ],
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-29"
+  },
+  {
+    "id": "knowledge_043",
+    "category": "legal_basis",
+    "risk_type": "unilateral_interpretation",
+    "title": "格式条款争议通常作不利于提供方解释",
+    "content": "合同条款存在两种以上解释时，尤其在格式条款场景下，通常应作出不利于提供格式条款一方的解释。以单方最终解释权替代争议解释机制，存在显著失衡风险。",
+    "source": "《中华人民共和国民法典》合同解释规则（概括）",
+    "keywords": [
+      "最终解释权",
+      "格式条款",
+      "不利解释",
+      "争议解释"
+    ],
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-29"
+  },
+  {
+    "id": "knowledge_044",
+    "category": "legal_basis",
+    "risk_type": "one_sided_ip_assignment",
+    "title": "知识产权归属应以约定和成果性质区分",
+    "content": "涉及技术成果、作品或者其他知识产权时，归属、许可范围和既有成果权利边界应结合合同约定与成果形成方式区分处理。笼统约定一切权利无差别归属于一方，容易引发效力和履行争议。",
+    "source": "知识产权与合同归属规则（概括）",
+    "keywords": [
+      "知识产权",
+      "归属",
+      "许可",
+      "既有成果"
+    ],
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-29"
+  },
+  {
+    "id": "knowledge_045",
+    "category": "legal_basis",
+    "risk_type": "confidentiality_imbalance",
+    "title": "保密义务范围和期限应与信息性质相匹配",
+    "content": "保密义务通常应围绕保密信息范围、使用目的、合理例外和持续期限进行限定。期限无限且无例外、或义务仅单方承担，容易被认定为明显失衡。",
+    "source": "商业秘密与保密义务规则（概括）",
+    "keywords": [
+      "保密",
+      "期限",
+      "例外",
+      "商业秘密"
+    ],
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-29"
+  },
+  {
+    "id": "knowledge_046",
+    "category": "legal_basis",
+    "risk_type": "biased_dispute_resolution",
+    "title": "协议管辖应与争议解决便利性保持合理联系",
+    "content": "约定诉讼法院或者仲裁机构时，应考虑与合同履行地、被告住所地、争议解决便利性等因素的合理联系。明显仅为增加一方维权成本而设置的单边管辖条款，容易引发公平性争议。",
+    "source": "民事争议解决规则（概括）",
+    "keywords": [
+      "协议管辖",
+      "仲裁",
+      "法院",
+      "维权成本"
+    ],
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-29"
+  },
+  {
+    "id": "knowledge_047",
+    "category": "legal_basis",
+    "risk_type": "missing_core_terms",
+    "title": "合同核心内容不清会增加履行和解释风险",
+    "content": "合同的标的、数量、质量、价款、履行期限、履行方式等核心内容不明确时，后续可能需要依赖补充协议、交易习惯或者解释规则确定。核心条款缺失会直接放大履约和争议处理成本。",
+    "source": "《中华人民共和国民法典》合同成立与履行规则（概括）",
+    "keywords": [
+      "核心条款",
+      "履行期限",
+      "价款",
+      "履行方式"
+    ],
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-29"
+  },
+  {
+    "id": "knowledge_048",
+    "category": "legal_basis",
+    "risk_type": "payment_imbalance",
+    "title": "付款安排应遵循对价与履行相对应原则",
+    "content": "价款支付条款应与交付、验收、里程碑或者其他履约结果保持合理对应。若付款义务明显前置且缺少相应保障，或付款完全取决于一方单方判断，容易形成对价失衡。",
+    "source": "《中华人民共和国民法典》合同履行与对价规则（概括）",
+    "keywords": [
+      "付款",
+      "对价",
+      "履行",
+      "验收"
+    ],
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-29"
+  },
+  {
+    "id": "knowledge_049",
+    "category": "legal_basis",
+    "risk_type": "unilateral_termination",
+    "title": "约定解除应与法定情形或明确条件相衔接",
+    "content": "合同解除通常应与法定解除事由、重大违约或者明确约定的触发条件相衔接。赋予一方任意、无条件解除权而不设置通知、补救或责任安排，容易造成权利义务失衡。",
+    "source": "《中华人民共和国民法典》合同解除规则（概括）",
+    "keywords": [
+      "解除",
+      "法定解除",
+      "重大违约",
+      "通知"
+    ],
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-29"
+  },
+  {
+    "id": "knowledge_050",
+    "category": "legal_basis",
+    "risk_type": "auto_renewal_trap",
+    "title": "自动续约应保障当事人充分知情与退出机会",
+    "content": "涉及自动续约、默认展期等安排时，应给予相对方合理的通知期限、明确的退出窗口和清晰的续约条件。以沉默视为同意且留给相对方的退出时间过短，容易放大格式条款和公平性争议。",
+    "source": "合同订立与格式条款公平规则（概括）",
+    "keywords": [
+      "自动续约",
+      "默认续约",
+      "退出窗口",
+      "沉默视为同意"
+    ],
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-29"
+  },
+  {
+    "id": "knowledge_051",
+    "category": "legal_basis",
+    "risk_type": "unilateral_change_right",
+    "title": "单方变更合同内容应有明确范围和程序",
+    "content": "合同履行过程中，如确需调整价格、规则、服务标准或者通知方式，应约定变更范围、生效条件和告知程序。赋予一方无边界的单方变更权，容易削弱交易稳定性和对价平衡。",
+    "source": "合同变更与诚实信用规则（概括）",
+    "keywords": [
+      "单方变更",
+      "价格调整",
+      "规则变更",
+      "告知程序"
+    ],
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-29"
+  },
+  {
+    "id": "knowledge_052",
+    "category": "legal_basis",
+    "risk_type": "acceptance_unfairness",
+    "title": "验收机制应明确标准、期限和异议处理",
+    "content": "验收条款通常应明确验收标准、验收期限、异议通知和整改流程。完全由一方单方认定验收结果，或既无标准也无期限，容易引发履约是否完成的争议。",
+    "source": "合同履行与验收规则（概括）",
+    "keywords": [
+      "验收",
+      "标准",
+      "期限",
+      "整改"
+    ],
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-29"
+  },
+  {
+    "id": "knowledge_053",
+    "category": "legal_basis",
+    "risk_type": "delivery_or_notice_trap",
+    "title": "送达规则应与真实知悉可能性保持合理对应",
+    "content": "通知、送达和生效规则应与相对方合理知悉的可能性保持对应，并保留必要的确认、补发或替代送达机制。单方发送即视为送达且立即生效，容易造成程序性失衡。",
+    "source": "通知送达与合同履行规则（概括）",
+    "keywords": [
+      "送达",
+      "通知",
+      "视为送达",
+      "立即生效"
+    ],
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-29"
+  },
+  {
+    "id": "knowledge_054",
+    "category": "legal_basis",
+    "risk_type": "termination_penalty_unfairness",
+    "title": "提前解约责任应与违约程度和实际损失相匹配",
+    "content": "提前解约责任通常应结合解除原因、已履行部分、可得利益损失和减损义务综合衡量。无论解除原因一律要求高额固定补偿，容易被认为明显失衡。",
+    "source": "合同解除与损失赔偿规则（概括）",
+    "keywords": [
+      "提前解约",
+      "补偿",
+      "实际损失",
+      "减损义务"
+    ],
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-29"
+  },
+  {
+    "id": "knowledge_055",
+    "category": "legal_basis",
+    "risk_type": "liability_imbalance",
+    "title": "违约责任分配应与义务结构保持基本对等",
+    "content": "合同中违约责任、赔偿责任和补救义务的安排，应与双方承担的主要义务保持基本对应。一方承担全面责任而另一方几乎免责，容易被认为责任分配显著失衡。",
+    "source": "违约责任与公平原则（概括）",
+    "keywords": [
+      "违约责任",
+      "赔偿责任",
+      "责任分配",
+      "对等"
+    ],
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-29"
+  },
+  {
+    "id": "knowledge_056",
+    "category": "legal_basis",
+    "risk_type": "non_compete_or_exclusivity",
+    "title": "排他或竞业限制应有合理范围和期限",
+    "content": "独家合作、排他义务或者竞业限制通常应明确适用范围、期限、地域和例外，并与交易目的保持合理联系。无边界或期限过长的排他限制，容易被认为对经营自由限制过度。",
+    "source": "竞争限制与合同自由规则（概括）",
+    "keywords": [
+      "排他",
+      "独家",
+      "竞业限制",
+      "期限"
+    ],
+    "jurisdiction": "CN",
+    "updated_at": "2026-03-29"
   }
 ]
