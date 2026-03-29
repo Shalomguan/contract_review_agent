@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 - 合同风险审查助手</title>
+    <style>
+        :root {
+            --bg: #f3f6f9;
+            --panel: #ffffff;
+            --panel-soft: #f8fafc;
+            --border: #d9e0e7;
+            --text: #15202b;
+            --muted: #5d6b7a;
+            --accent: #143a52;
+            --accent-soft: #dbe9f6;
+            --shadow: 0 20px 44px rgba(15, 23, 42, 0.08);
+            --radius: 22px;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(circle at top left, rgba(20, 58, 82, 0.08), transparent 28%),
+                linear-gradient(180deg, #f8fbfd 0%, var(--bg) 100%);
+            display: grid;
+            place-items: center;
+            padding: 24px;
+        }
+
+        .shell {
+            width: min(1080px, 100%);
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 22px;
+        }
+
+        .hero,
+        .card {
+            background: var(--panel);
+            border: 1px solid rgba(217, 224, 231, 0.9);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .hero {
+            padding: 34px;
+            display: grid;
+            gap: 18px;
+            align-content: space-between;
+        }
+
+        .eyebrow {
+            color: var(--muted);
+            font-size: 13px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 42px;
+            line-height: 1.08;
+            letter-spacing: -0.03em;
+        }
+
+        .hero p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.85;
+            font-size: 16px;
+        }
+
+        .hero-points {
+            display: grid;
+            gap: 12px;
+        }
+
+        .hero-point {
+            padding: 14px 16px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            background: var(--panel-soft);
+            line-height: 1.65;
+        }
+
+        .card {
+            padding: 28px;
+            display: grid;
+            gap: 16px;
+            align-content: start;
+        }
+
+        .card h2 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .card .desc {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.7;
+            font-size: 14px;
+        }
+
+        .field {
+            display: grid;
+            gap: 8px;
+        }
+
+        .field label {
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        .field input {
+            width: 100%;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 12px 14px;
+            font: inherit;
+            background: #fcfdfe;
+            color: var(--text);
+        }
+
+        .mode-switch {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .mode-switch button {
+            border: 1px solid var(--border);
+            background: #ffffff;
+            color: var(--muted);
+        }
+
+        .mode-switch button.active {
+            background: var(--accent);
+            color: #ffffff;
+            border-color: var(--accent);
+        }
+
+        .actions {
+            display: grid;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        button,
+        .link-button {
+            border: none;
+            border-radius: 999px;
+            padding: 12px 16px;
+            font: inherit;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            transition: transform 0.15s ease, opacity 0.15s ease, background 0.15s ease;
+        }
+
+        button:hover,
+        .link-button:hover { transform: translateY(-1px); }
+
+        .primary {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .secondary {
+            background: var(--accent-soft);
+            color: var(--accent);
+        }
+
+        .ghost {
+            background: transparent;
+            color: var(--muted);
+            border: 1px solid var(--border);
+        }
+
+        .status {
+            min-height: 24px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .status.error { color: #b42318; }
+        .status.success { color: #157347; }
+
+        .footer-links {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 4px;
+        }
+
+        @media (max-width: 960px) {
+            .shell { grid-template-columns: 1fr; }
+            h1 { font-size: 34px; }
+        }
+    </style>
+</head>
+<body>
+    <main class="shell">
+        <section class="hero">
+            <div>
+                <div class="eyebrow">Contract Review Agent</div>
+                <h1>登录后开始审查合同风险</h1>
+            </div>
+            <p>系统支持文本录入、文件上传、结构化风险分析、参考依据展示和历史记录管理。登录后可查看并管理自己的审查记录。</p>
+            <div class="hero-points">
+                <div class="hero-point">1. 登录后可提交文本或文件进行审查。</div>
+                <div class="hero-point">2. 审查结果包含风险等级、原因、建议、替代文本和参考依据。</div>
+                <div class="hero-point">3. 历史记录按用户隔离，只能查看和删除自己的审查数据。</div>
+            </div>
+        </section>
+
+        <section class="card">
+            <div>
+                <h2 id="authHeading">账户登录</h2>
+                <p id="authDescription" class="desc">输入用户名和密码后登录。首次使用请切换到注册模式。</p>
+            </div>
+
+            <div class="mode-switch">
+                <button id="loginModeButton" class="active" type="button" onclick="setAuthMode('login')">登录</button>
+                <button id="registerModeButton" type="button" onclick="setAuthMode('register')">注册</button>
+            </div>
+
+            <div class="field">
+                <label for="username">用户名</label>
+                <input id="username" type="text" placeholder="请输入用户名" autocomplete="username" />
+            </div>
+
+            <div class="field">
+                <label for="password">密码</label>
+                <input id="password" type="password" placeholder="请输入密码" autocomplete="current-password" />
+            </div>
+
+            <div id="confirmPasswordField" class="field" style="display:none;">
+                <label for="confirmPassword">确认密码</label>
+                <input id="confirmPassword" type="password" placeholder="注册时请再次输入密码" autocomplete="new-password" />
+            </div>
+
+            <div id="status" class="status">登录后将自动跳转到用户页。</div>
+
+            <div class="actions">
+                <button id="submitButton" class="primary" type="button" onclick="submitAuthAction()">登录</button>
+            </div>
+
+            <div class="footer-links">
+                <a class="link-button ghost" href="/">返回用户页</a>
+                <a class="link-button ghost" href="/lab">进入测试页</a>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordField = document.getElementById('confirmPasswordField');
+        const confirmPasswordInput = document.getElementById('confirmPassword');
+        const loginModeButton = document.getElementById('loginModeButton');
+        const registerModeButton = document.getElementById('registerModeButton');
+        const submitButton = document.getElementById('submitButton');
+        const authHeading = document.getElementById('authHeading');
+        const authDescription = document.getElementById('authDescription');
+        const statusBox = document.getElementById('status');
+        const nextUrl = new URLSearchParams(window.location.search).get('next') || '/';
+        let authMode = 'login';
+        let authToken = localStorage.getItem('contractAgentToken') || '';
+        let authUsername = localStorage.getItem('contractAgentUsername') || '';
+
+        function setStatus(message, type = '') {
+            statusBox.textContent = message;
+            statusBox.className = `status ${type}`.trim();
+        }
+
+
+        function setAuthMode(mode) {
+            authMode = mode === 'register' ? 'register' : 'login';
+            const isRegister = authMode === 'register';
+            confirmPasswordField.style.display = isRegister ? 'grid' : 'none';
+            confirmPasswordInput.value = '';
+            loginModeButton.classList.toggle('active', !isRegister);
+            registerModeButton.classList.toggle('active', isRegister);
+            authHeading.textContent = isRegister ? '注册新账户' : '账户登录';
+            authDescription.textContent = isRegister
+                ? '注册时需要输入两次密码，注册成功后会自动登录。'
+                : '输入用户名和密码后登录。首次使用请切换到注册模式。';
+            submitButton.textContent = isRegister ? '注册并登录' : '登录';
+            setStatus(isRegister ? '请填写用户名、密码和确认密码。' : '登录后将自动跳转到用户页。');
+        }
+
+        function submitAuthAction() {
+            if (authMode === 'register') {
+                registerUser();
+                return;
+            }
+            loginUser();
+        }
+
+        function setAuthState(token, username) {
+            authToken = token || '';
+            authUsername = username || '';
+            if (authToken) {
+                localStorage.setItem('contractAgentToken', authToken);
+                localStorage.setItem('contractAgentUsername', authUsername);
+            } else {
+                localStorage.removeItem('contractAgentToken');
+                localStorage.removeItem('contractAgentUsername');
+            }
+        }
+
+        async function handleResponse(response) {
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok) {
+                throw new Error(data.detail || '请求失败。');
+            }
+            return data;
+        }
+
+        async function loginUser() {
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value;
+            if (!username || !password) {
+                setStatus('请先输入用户名和密码。', 'error');
+                return;
+            }
+            setStatus('正在登录，请稍候。');
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password }),
+                });
+                const data = await handleResponse(response);
+                setAuthState(data.access_token, data.user.username);
+                confirmPasswordInput.value = '';
+                setStatus('登录成功，正在跳转到用户页。', 'success');
+                window.location.href = nextUrl;
+            } catch (error) {
+                setStatus(`登录失败：${error.message}`, 'error');
+            }
+        }
+
+        async function registerUser() {
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value;
+            const confirmPassword = confirmPasswordInput.value;
+            if (!username || !password || !confirmPassword) {
+                setStatus('注册时请完整填写用户名、密码和确认密码。', 'error');
+                return;
+            }
+            if (password !== confirmPassword) {
+                setStatus('两次输入的密码不一致，请重新确认。', 'error');
+                return;
+            }
+            setStatus('正在注册，请稍候。');
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password }),
+                });
+                const data = await handleResponse(response);
+                setAuthState(data.access_token, data.user.username);
+                confirmPasswordInput.value = '';
+                setStatus('注册成功，正在跳转到用户页。', 'success');
+                window.location.href = nextUrl;
+            } catch (error) {
+                setStatus(`注册失败：${error.message}`, 'error');
+            }
+        }
+
+        async function verifyExistingLogin() {
+            if (!authToken) {
+                return;
+            }
+            try {
+                const response = await fetch('/api/auth/me', {
+                    headers: { Authorization: `Bearer ${authToken}` },
+                });
+                if (!response.ok) {
+                    setAuthState('', '');
+                    return;
+                }
+                const data = await response.json();
+                setAuthState(authToken, data.username);
+                window.location.href = nextUrl;
+            } catch {
+                setAuthState('', '');
+            }
+        }
+
+        function handleEnterSubmit(event) {
+            if (event.key !== 'Enter') {
+                return;
+            }
+            event.preventDefault();
+            submitAuthAction();
+        }
+
+        usernameInput.addEventListener('keydown', handleEnterSubmit);
+        passwordInput.addEventListener('keydown', handleEnterSubmit);
+        confirmPasswordInput.addEventListener('keydown', handleEnterSubmit);
+
+        if (authUsername) {
+            usernameInput.value = authUsername;
+        }
+        setAuthMode('login');
+        verifyExistingLogin();
+    </script>
+</body>
+</html>

@@ -440,6 +440,30 @@
             margin-bottom: 8px;
         }
 
+        .reference-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .reference-kind {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 999px;
+            padding: 4px 10px;
+            font-size: 12px;
+            font-weight: 700;
+            background: var(--accent-soft);
+            color: var(--accent);
+        }
+
+        .reference-kind.legal-basis {
+            background: #eef4ff;
+            color: #284b8f;
+        }
+
         .empty {
             padding: 24px;
             border-radius: 16px;
@@ -493,10 +517,68 @@
                 flex-direction: column;
             }
         }
+
+        .auth-shell {
+            margin-bottom: 18px;
+        }
+
+        .auth-card {
+            background: var(--panel);
+            border: 1px solid rgba(217, 224, 231, 0.9);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 18px 20px;
+            display: grid;
+            gap: 12px;
+        }
+
+        .auth-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .auth-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 220px));
+            gap: 10px;
+        }
+
+        .auth-grid input {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 10px 12px;
+            font: inherit;
+            background: #fcfdfe;
+        }
+
     </style>
 </head>
 <body>
     <div class="page">
+
+        <section class="auth-shell">
+            <div class="auth-card">
+                <div class="auth-row">
+                    <div>
+                        <div class="meta-label">联调账户</div>
+                        <div id="authStatus" class="muted">未登录。可直接使用现有账号登录，或前往正式登录页注册。</div>
+                    </div>
+                    <div class="auth-grid">
+                        <input id="authUsername" type="text" placeholder="用户名" />
+                        <input id="authPassword" type="password" placeholder="密码（至少 8 位）" />
+                    </div>
+                </div>
+                <div class="actions" style="margin-top:0;">
+                    <button class="primary" type="button" onclick="loginUser()">使用现有账户登录</button>
+                    <button class="secondary" type="button" onclick="registerUser()">快速注册并登录</button>
+                    <button class="ghost" type="button" onclick="window.location.href='/login?next=%2Flab'">前往正式登录页</button>
+                    <button class="ghost" type="button" onclick="logoutUser()">退出登录</button>
+                </div>
+            </div>
+        </section>
         <section class="hero">
             <div class="hero-card">
                 <h1>合同审查风险 Agent 测试页</h1>
@@ -569,6 +651,10 @@
                         <div class="muted" id="resultMeta">等待分析</div>
                     </div>
                     <div id="errorBox"></div>
+                    <div class="actions" style="margin-top:0; margin-bottom: 6px;">
+                        <button id="exportMarkdownButton" class="ghost" type="button" onclick="exportCurrent('markdown')" disabled>导出 Markdown</button>
+                        <button id="exportHtmlButton" class="ghost" type="button" onclick="exportCurrent('html')" disabled>导出 HTML</button>
+                    </div>
                     <div id="summaryBox" class="summary-text">提交合同文本或上传文件后，这里会显示审查摘要与风险统计。</div>
                     <div class="stats">
                         <div class="stat">
@@ -620,6 +706,127 @@
     </div>
 
     <script>
+
+        const authUsernameInput = document.getElementById("authUsername");
+        const authPasswordInput = document.getElementById("authPassword");
+        const authStatus = document.getElementById("authStatus");
+        let authToken = localStorage.getItem("contractAgentToken") || "";
+        let authUsername = localStorage.getItem("contractAgentUsername") || "";
+
+        function setAuthState(token, username) {
+            authToken = token || "";
+            authUsername = username || "";
+            if (authToken) {
+                localStorage.setItem("contractAgentToken", authToken);
+                localStorage.setItem("contractAgentUsername", authUsername);
+            } else {
+                localStorage.removeItem("contractAgentToken");
+                localStorage.removeItem("contractAgentUsername");
+            }
+            updateExportButtons();
+        updateAuthView();
+        }
+
+        function updateAuthView() {
+            authStatus.textContent = authToken
+                ? `当前已登录：${authUsername}`
+                : "未登录。可直接使用现有账号登录，或前往正式登录页注册。";
+        }
+
+        async function apiFetch(url, options = {}) {
+            const headers = new Headers(options.headers || {});
+            if (authToken) {
+                headers.set("Authorization", `Bearer ${authToken}`);
+            }
+            const response = await fetch(url, { ...options, headers });
+            if (response.status === 401) {
+                setAuthState("", "");
+            }
+            return response;
+        }
+
+        async function registerUser() {
+            const username = authUsernameInput.value.trim();
+            const password = authPasswordInput.value;
+            if (!username || !password) {
+                setError("注册时请先输入用户名和密码。
+如需确认密码，请使用正式登录页。 ");
+                return;
+            }
+            try {
+                authStatus.textContent = "正在注册联调账户...";
+                const response = await apiFetch("/api/auth/register", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username, password }),
+                });
+                const data = await handleResponse(response);
+                setAuthState(data.access_token, data.user.username);
+                setError("");
+                authStatus.textContent = `当前已登录：${data.user.username}`;
+                await loadReviews();
+            } catch (error) {
+                updateAuthView();
+                setError(`注册失败：${error.message}`);
+            }
+        }
+
+        async function loginUser() {
+            const username = authUsernameInput.value.trim();
+            const password = authPasswordInput.value;
+            if (!username || !password) {
+                setError("请先输入用户名和密码。 ");
+                return;
+            }
+            try {
+                authStatus.textContent = "正在登录联调账户...";
+                const response = await apiFetch("/api/auth/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username, password }),
+                });
+                const data = await handleResponse(response);
+                setAuthState(data.access_token, data.user.username);
+                setError("");
+                authStatus.textContent = `当前已登录：${data.user.username}`;
+                await loadReviews();
+            } catch (error) {
+                updateAuthView();
+                setError(`登录失败：${error.message}`);
+            }
+        }
+
+        async function loadCurrentUser() {
+            if (!authToken) {
+                return;
+            }
+            try {
+                const response = await apiFetch('/api/auth/me');
+                const data = await handleResponse(response);
+                setAuthState(authToken, data.username);
+            } catch (error) {
+                setError(error.message);
+                reviewList.innerHTML = `<div class="empty">请先登录后查看历史记录。</div>`;
+            }
+        }
+
+        function logoutUser() {
+            setAuthState("", "");
+            resetResultView();
+            reviewList.innerHTML = `<div class="empty">请先登录后查看历史记录。</div>`;
+        }
+
+        function handleAuthEnter(event) {
+            if (event.key !== "Enter") {
+                return;
+            }
+            event.preventDefault();
+            loginUser();
+        }
+
+        authUsernameInput.addEventListener("keydown", handleAuthEnter);
+        authPasswordInput.addEventListener("keydown", handleAuthEnter);
+
         const sampleText = `软件开发服务合同
 
 第一条 服务内容
@@ -642,6 +849,8 @@
 
         const reviewList = document.getElementById("reviewList");
         const summaryBox = document.getElementById("summaryBox");
+        const exportMarkdownButton = document.getElementById("exportMarkdownButton");
+        const exportHtmlButton = document.getElementById("exportHtmlButton");
         const errorBox = document.getElementById("errorBox");
         const resultMeta = document.getElementById("resultMeta");
         const riskList = document.getElementById("riskList");
@@ -704,6 +913,53 @@
             errorBox.innerHTML = message ? `<div class="error-box">${escapeHtml(message)}</div>` : "";
         }
 
+        function updateExportButtons() {
+            const disabled = !currentResult?.review_id;
+            exportMarkdownButton.disabled = disabled;
+            exportHtmlButton.disabled = disabled;
+        }
+
+        function getDownloadFilename(response, fallback) {
+            const disposition = response.headers.get("Content-Disposition") || "";
+            const match = disposition.match(/filename\*=UTF-8''([^;]+)/i);
+            if (!match) {
+                return fallback;
+            }
+            try {
+                return decodeURIComponent(match[1]);
+            } catch {
+                return fallback;
+            }
+        }
+
+        async function exportCurrent(format) {
+            if (!currentResult?.review_id) {
+                setError("请先生成或加载一条审查结果。");
+                return;
+            }
+            try {
+                const response = await apiFetch(`/api/review/${currentResult.review_id}/export?format=${format}`);
+                if (!response.ok) {
+                    const data = await response.json().catch(() => ({}));
+                    throw new Error(data.detail || "导出失败，请稍后重试。");
+                }
+                const blob = await response.blob();
+                const extension = format === "html" ? "html" : "md";
+                const fallback = `${currentResult.document_name || "contract-review"}-review.${extension}`;
+                const filename = getDownloadFilename(response, fallback);
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.href = url;
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                URL.revokeObjectURL(url);
+            } catch (error) {
+                setError(error.message || "导出失败，请稍后重试。");
+            }
+        }
+
         function formatRiskType(riskType) {
             return riskTypeLabels[riskType] || "其他风险";
         }
@@ -740,18 +996,28 @@
             statLow.textContent = String(counts.low);
         }
 
+        function formatReferenceCategory(category) {
+            return category === 'legal_basis' ? '法律依据' : '审查规则';
+        }
+
         function renderReferences(references) {
             if (!references || !references.length) {
                 return `<div class="empty">当前没有命中的参考依据。</div>`;
             }
 
-            return `<div class="references">${references.map((reference) => `
+            return `<div class="references">${references.map((reference) => {
+                const category = reference.category || 'review_rule';
+                const kindClass = category === 'legal_basis' ? 'reference-kind legal-basis' : 'reference-kind';
+                return `
                 <div class="reference-item">
                     <div class="reference-title">${escapeHtml(reference.title || "参考依据")}</div>
-                    <div class="reference-source">${escapeHtml(reference.source || "")}</div>
+                    <div class="reference-meta">
+                        <span class="${kindClass}">${escapeHtml(formatReferenceCategory(category))}</span>
+                        <div class="reference-source">${escapeHtml(reference.source || "")}</div>
+                    </div>
                     <div>${escapeHtml(reference.content || "")}</div>
-                </div>
-            `).join("")}</div>`;
+                </div>`;
+            }).join("")}</div>`;
         }
 
         function renderRisks(data) {
@@ -811,6 +1077,7 @@
 
         function setResult(data) {
             currentResult = data;
+            updateExportButtons();
             setError("");
             renderSummary(data);
             renderRisks(data);
@@ -840,7 +1107,7 @@
             }
 
             try {
-                const response = await fetch("/api/review/analyze", {
+                const response = await apiFetch("/api/review/analyze", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ document_name: "text_input.txt", text })
@@ -863,7 +1130,7 @@
             try {
                 const form = new FormData();
                 form.append("file", input.files[0]);
-                const response = await fetch("/api/review/upload", {
+                const response = await apiFetch("/api/review/upload", {
                     method: "POST",
                     body: form
                 });
@@ -877,7 +1144,7 @@
 
         async function loadReview(reviewId) {
             try {
-                const response = await fetch(`/api/review/${reviewId}`);
+                const response = await apiFetch(`/api/review/${reviewId}`);
                 const data = await handleResponse(response);
                 activeReviewId = reviewId;
                 setResult(data);
@@ -892,11 +1159,12 @@
             }
 
             try {
-                const response = await fetch(`/api/review/${reviewId}`, { method: "DELETE" });
+                const response = await apiFetch(`/api/review/${reviewId}`, { method: "DELETE" });
                 await handleResponse(response);
                 if (activeReviewId === reviewId) {
                     activeReviewId = null;
                     currentResult = null;
+                    updateExportButtons();
                     resultMeta.textContent = "等待分析";
                     summaryBox.textContent = "提交合同文本或上传文件后，这里会显示审查摘要与风险统计。";
                     riskList.innerHTML = `<div class="empty">当前还没有审查结果。</div>`;
@@ -920,7 +1188,7 @@
 
         async function loadReviews() {
             try {
-                const response = await fetch("/api/reviews");
+                const response = await apiFetch("/api/reviews");
                 const data = await handleResponse(response);
                 const items = Array.isArray(data?.items) ? data.items : [];
 
@@ -973,7 +1241,12 @@
             });
         }
 
-        loadReviews();
+        updateAuthView();
+        if (authToken) {
+            loadCurrentUser().then(() => loadReviews());
+        } else {
+            reviewList.innerHTML = `<div class="empty">请先登录后查看历史记录。</div>`;
+        }
     </script>
 </body>
 </html>
