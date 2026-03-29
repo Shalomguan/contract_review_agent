@@ -54,10 +54,10 @@ class RetrievalService:
         if self._use_vector_retrieval():
             ranked = self._rank_with_vectors(clause_text=clause_text, preferred=preferred, fallback=fallback)
             if ranked:
-                return [item for _, item in ranked[: self.top_k]]
+                return self._select_results(ranked)
 
         ranked = self._rank_lexically(clause_text=clause_text, candidates=preferred + fallback, risk_type=risk_type)
-        selected = [item for _, item in ranked[: self.top_k]]
+        selected = self._select_results(ranked)
 
         if len(selected) < self.top_k:
             for candidate in preferred + fallback:
@@ -68,6 +68,47 @@ class RetrievalService:
                     break
 
         return selected
+
+    def _select_results(self, ranked: list[tuple[float, KnowledgeSnippet]]) -> list[KnowledgeSnippet]:
+        if not ranked:
+            return []
+
+        selected: list[KnowledgeSnippet] = []
+        selected_ids: set[str] = set()
+
+        def add(snippet: KnowledgeSnippet) -> None:
+            if snippet.id in selected_ids or len(selected) >= self.top_k:
+                return
+            selected.append(snippet)
+            selected_ids.add(snippet.id)
+
+        top_snippet = ranked[0][1]
+        add(top_snippet)
+
+        if self.top_k > 1:
+            complementary = self._find_complementary_category(ranked, top_snippet)
+            if complementary is not None:
+                add(complementary)
+
+        for _, snippet in ranked:
+            add(snippet)
+            if len(selected) >= self.top_k:
+                break
+
+        return selected
+
+    @staticmethod
+    def _find_complementary_category(
+        ranked: list[tuple[float, KnowledgeSnippet]],
+        top_snippet: KnowledgeSnippet,
+    ) -> KnowledgeSnippet | None:
+        target_category = 'legal_basis' if top_snippet.category != 'legal_basis' else 'review_rule'
+        for _, snippet in ranked[1:]:
+            if target_category == 'legal_basis' and snippet.category == 'legal_basis':
+                return snippet
+            if target_category == 'review_rule' and snippet.category != 'legal_basis':
+                return snippet
+        return None
 
     def _use_vector_retrieval(self) -> bool:
         return self.using_vector_retrieval

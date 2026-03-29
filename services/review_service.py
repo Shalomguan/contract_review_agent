@@ -4,12 +4,14 @@ from __future__ import annotations
 from collections import Counter
 from collections import defaultdict
 from datetime import date, datetime, time, timezone
+from zoneinfo import ZoneInfo
 from pathlib import Path
 from uuid import uuid4
 
 from core.config import Settings
 from models.review import ParsedDocument, Review, ReviewListFilters
 from repositories.review_repository import ReviewRepository
+from services.report_exporter import ExportArtifact, ReviewExporter
 from services.analyzers.risk_analyzer import RiskAnalyzer
 from services.parsers.base import DocumentParseError
 from services.parsers.factory import DocumentParserFactory
@@ -26,42 +28,50 @@ class ReviewService:
         splitter: ContractSplitter,
         risk_analyzer: RiskAnalyzer,
         review_repository: ReviewRepository,
+        review_exporter: ReviewExporter,
     ) -> None:
         self.settings = settings
         self.parser_factory = parser_factory
         self.splitter = splitter
         self.risk_analyzer = risk_analyzer
         self.review_repository = review_repository
+        self.review_exporter = review_exporter
         self._document_name_counters: dict[str, int] = defaultdict(int)
+        self._local_timezone = ZoneInfo(self.settings.app_timezone)
 
-    def analyze_upload(self, filename: str, content: bytes) -> Review:
+    def analyze_upload(self, user_id: str, filename: str, content: bytes) -> Review:
         """Analyze an uploaded contract file."""
         parser_result = self.parser_factory.parse(filename=filename, content=content)
         generated_name = self._generate_document_name(filename)
         self._persist_upload(filename=generated_name, content=content)
         return self._analyze_document(
+            user_id=user_id,
             document_name=generated_name,
             text=parser_result.text,
             content_type=parser_result.content_type,
             metadata={**parser_result.metadata, "original_filename": filename},
+            source_name=filename,
         )
 
-    def analyze_text(self, document_name: str, text: str) -> Review:
+    def analyze_text(self, user_id: str, document_name: str, text: str) -> Review:
         """Analyze contract text submitted directly by API callers."""
         generated_name = self._generate_document_name()
         return self._analyze_document(
+            user_id=user_id,
             document_name=generated_name,
             text=text,
             content_type="text/plain",
             metadata={"submitted_name": document_name},
+            source_name=document_name,
         )
 
-    def get_review(self, review_id: str) -> Review | None:
+    def get_review(self, user_id: str, review_id: str) -> Review | None:
         """Fetch a persisted review by ID."""
-        return self.review_repository.get(review_id)
+        return self.review_repository.get(user_id=user_id, review_id=review_id)
 
     def list_reviews(
         self,
+        user_id: str,
         limit: int = 20,
         offset: int = 0,
         document_name: str | None = None,
@@ -76,13 +86,28 @@ class ReviewService:
             date_to=self._end_of_day(date_to),
             risk_level=risk_level,
         )
-        return self.review_repository.list(filters=filters, limit=limit, offset=offset)
+        return self.review_repository.list(user_id=user_id, filters=filters, limit=limit, offset=offset)
 
-    def delete_review(self, review_id: str) -> bool:
+    def delete_review(self, user_id: str, review_id: str) -> bool:
         """Delete one persisted review by ID."""
-        return self.review_repository.delete(review_id)
+        return self.review_repository.delete(user_id=user_id, review_id=review_id)
 
-    def _analyze_document(self, document_name: str, text: str, content_type: str, metadata: dict[str, str] | None = None) -> Review:
+    def export_review(self, user_id: str, review_id: str, fmt: str) -> ExportArtifact | None:
+        """Render one persisted review into a downloadable report."""
+        review = self.get_review(user_id=user_id, review_id=review_id)
+        if review is None:
+            return None
+        return self.review_exporter.export(review, fmt)
+
+    def _analyze_document(
+        self,
+        user_id: str,
+        document_name: str,
+        text: str,
+        content_type: str,
+        metadata: dict[str, str] | None = None,
+        source_name: str | None = None,
+    ) -> Review:
         normalized_text = text.strip()
         if not normalized_text:
             raise DocumentParseError("No text could be extracted from the document.")
@@ -107,13 +132,15 @@ class ReviewService:
             document_text=document.text,
             risks=risks,
             created_at=datetime.now(timezone.utc),
+            source_name=source_name,
+            user_id=user_id,
         )
         self.review_repository.save(review)
         return review
 
     def _generate_document_name(self, original_name: str | None = None) -> str:
         """Generate a readable timestamp-based document name."""
-        timestamp = datetime.now().strftime("%Y%m%d-%H%M")
+        timestamp = datetime.now(self._local_timezone).strftime("%Y%m%d-%H%M")
         base_name = f"contract{timestamp}"
         self._document_name_counters[base_name] += 1
         counter = self._document_name_counters[base_name]
@@ -147,9 +174,11 @@ class ReviewService:
     def _start_of_day(self, value: date | None) -> datetime | None:
         if value is None:
             return None
-        return datetime.combine(value, time.min, tzinfo=timezone.utc)
+        local_start = datetime.combine(value, time.min, tzinfo=self._local_timezone)
+        return local_start.astimezone(timezone.utc)
 
     def _end_of_day(self, value: date | None) -> datetime | None:
         if value is None:
             return None
-        return datetime.combine(value, time.max, tzinfo=timezone.utc)
+        local_end = datetime.combine(value, time.max, tzinfo=self._local_timezone)
+        return local_end.astimezone(timezone.utc)

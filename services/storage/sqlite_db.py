@@ -16,16 +16,40 @@ class SQLiteDatabase:
         with self.connect() as connection:
             connection.execute(
                 """
+                CREATE TABLE IF NOT EXISTS users (
+                    user_id TEXT PRIMARY KEY,
+                    username TEXT NOT NULL UNIQUE,
+                    password_hash TEXT NOT NULL,
+                    created_at TEXT NOT NULL
+                )
+                """
+            )
+            connection.execute(
+                """
                 CREATE TABLE IF NOT EXISTS reviews (
                     review_id TEXT PRIMARY KEY,
+                    user_id TEXT,
                     document_id TEXT NOT NULL,
                     document_name TEXT NOT NULL,
                     summary TEXT NOT NULL,
                     created_at TEXT NOT NULL,
                     risk_counts TEXT NOT NULL,
-                    review_payload TEXT NOT NULL
+                    review_payload TEXT NOT NULL,
+                    FOREIGN KEY(user_id) REFERENCES users(user_id)
                 )
                 """
+            )
+            review_columns = {
+                row["name"]
+                for row in connection.execute("PRAGMA table_info(reviews)").fetchall()
+            }
+            if "user_id" not in review_columns:
+                connection.execute("ALTER TABLE reviews ADD COLUMN user_id TEXT")
+            connection.execute(
+                "CREATE INDEX IF NOT EXISTS idx_reviews_user_created_at ON reviews(user_id, created_at DESC)"
+            )
+            connection.execute(
+                "CREATE INDEX IF NOT EXISTS idx_users_username ON users(username)"
             )
             connection.commit()
 

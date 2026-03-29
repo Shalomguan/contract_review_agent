@@ -1,7 +1,10 @@
 """PDF parser."""
 from io import BytesIO
 
-from PyPDF2 import PdfReader
+try:
+    from pypdf import PdfReader
+except ImportError:  # pragma: no cover - compatibility for existing environments
+    from PyPDF2 import PdfReader
 
 from services.parsers.base import DocumentParseError, DocumentParser, ParserResult
 

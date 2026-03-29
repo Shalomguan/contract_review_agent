@@ -41,6 +41,7 @@ class PromptAnalyzer:
                 title=item.title,
                 source=item.source,
                 content=item.content,
+                category=item.category,
             )
             for item in knowledge_snippets
         ]
