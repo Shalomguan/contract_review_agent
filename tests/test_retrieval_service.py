@@ -48,7 +48,7 @@ def create_provider_with_temp_knowledge(tmp_path: Path) -> LegalKnowledgeProvide
     payload = [
         {
             'id': 'knowledge_001',
-            'category': 'general_contract_review',
+            'category': 'review_rule',
             'risk_type': 'unilateral_termination',
             'title': '单方解除权限制',
             'content': '解除权一般应与重大违约、法定解除情形或明确约定的触发条件挂钩。',
@@ -59,7 +59,7 @@ def create_provider_with_temp_knowledge(tmp_path: Path) -> LegalKnowledgeProvide
         },
         {
             'id': 'knowledge_002',
-            'category': 'general_contract_review',
+            'category': 'review_rule',
             'risk_type': 'biased_dispute_resolution',
             'title': '争议管辖公平性',
             'content': '争议解决条款不宜以显著增加一方诉讼成本的方式设定管辖地点。',
@@ -115,8 +115,8 @@ def test_retrieval_service_supports_new_rule_types() -> None:
 def test_vector_index_is_persisted_and_reused(tmp_path: Path) -> None:
     provider = create_provider_with_temp_knowledge(tmp_path)
     texts = [
-        'general_contract_review unilateral_termination 单方解除权限制 解除权一般应与重大违约、法定解除情形或明确约定的触发条件挂钩。 合同风险审查规则 单方解除 随时解除 CN',
-        'general_contract_review biased_dispute_resolution 争议管辖公平性 争议解决条款不宜以显著增加一方诉讼成本的方式设定管辖地点。 诉讼与仲裁条款审查要点 甲方所在地法院 仲裁 CN',
+        'review_rule unilateral_termination 单方解除权限制 解除权一般应与重大违约、法定解除情形或明确约定的触发条件挂钩。 合同风险审查规则 单方解除 随时解除 CN',
+        'review_rule biased_dispute_resolution 争议管辖公平性 争议解决条款不宜以显著增加一方诉讼成本的方式设定管辖地点。 诉讼与仲裁条款审查要点 甲方所在地法院 仲裁 CN',
         '甲方可以随时终止合作',
     ]
     embedding_provider = FakeEmbeddingProvider(
@@ -145,8 +145,8 @@ def test_retrieval_service_uses_vector_scores_when_available(tmp_path: Path) -> 
     provider = create_provider_with_temp_knowledge(tmp_path)
     query = '甲方可以随时终止合作'
     texts = [
-        'general_contract_review unilateral_termination 单方解除权限制 解除权一般应与重大违约、法定解除情形或明确约定的触发条件挂钩。 合同风险审查规则 单方解除 随时解除 CN',
-        'general_contract_review biased_dispute_resolution 争议管辖公平性 争议解决条款不宜以显著增加一方诉讼成本的方式设定管辖地点。 诉讼与仲裁条款审查要点 甲方所在地法院 仲裁 CN',
+        'review_rule unilateral_termination 单方解除权限制 解除权一般应与重大违约、法定解除情形或明确约定的触发条件挂钩。 合同风险审查规则 单方解除 随时解除 CN',
+        'review_rule biased_dispute_resolution 争议管辖公平性 争议解决条款不宜以显著增加一方诉讼成本的方式设定管辖地点。 诉讼与仲裁条款审查要点 甲方所在地法院 仲裁 CN',
         query,
     ]
     embedding_provider = FakeEmbeddingProvider(
@@ -188,8 +188,8 @@ def test_retrieval_service_reports_vector_mode_when_index_available(tmp_path: Pa
     provider = create_provider_with_temp_knowledge(tmp_path)
     query = '甲方可以随时终止合作'
     texts = [
-        'general_contract_review unilateral_termination 单方解除权限制 解除权一般应与重大违约、法定解除情形或明确约定的触发条件挂钩。 合同风险审查规则 单方解除 随时解除 CN',
-        'general_contract_review biased_dispute_resolution 争议管辖公平性 争议解决条款不宜以显著增加一方诉讼成本的方式设定管辖地点。 诉讼与仲裁条款审查要点 甲方所在地法院 仲裁 CN',
+        'review_rule unilateral_termination 单方解除权限制 解除权一般应与重大违约、法定解除情形或明确约定的触发条件挂钩。 合同风险审查规则 单方解除 随时解除 CN',
+        'review_rule biased_dispute_resolution 争议管辖公平性 争议解决条款不宜以显著增加一方诉讼成本的方式设定管辖地点。 诉讼与仲裁条款审查要点 甲方所在地法院 仲裁 CN',
         query,
     ]
     embedding_provider = FakeEmbeddingProvider(
@@ -213,3 +213,51 @@ def test_retrieval_service_reports_lexical_fallback_when_index_unavailable(tmp_p
 
     assert service.using_vector_retrieval is False
     assert 'lexical fallback only' in service.status_message
+
+
+def test_retrieval_service_includes_legal_basis_when_available(tmp_path: Path) -> None:
+    payload = [
+        {
+            'id': 'knowledge_rule',
+            'category': 'review_rule',
+            'risk_type': 'unilateral_exemption',
+            'title': '单方免责审查要点',
+            'content': '一方不得通过笼统免责条款免除其因违约、过错或供应缺陷应承担的主要责任。',
+            'source': '合同风险审查规则',
+            'keywords': ['免责', '不承担责任'],
+            'jurisdiction': 'CN',
+            'updated_at': '2026-03-29',
+        },
+        {
+            'id': 'knowledge_basis',
+            'category': 'legal_basis',
+            'risk_type': 'unilateral_exemption',
+            'title': '格式条款免责需履行提示说明义务',
+            'content': '以格式条款减轻或者免除提供方责任时，应当进行合理提示和说明。',
+            'source': '《中华人民共和国民法典》格式条款规则（概括）',
+            'keywords': ['格式条款', '免责', '提示说明'],
+            'jurisdiction': 'CN',
+            'updated_at': '2026-03-29',
+        },
+        {
+            'id': 'knowledge_other',
+            'category': 'review_rule',
+            'risk_type': 'biased_dispute_resolution',
+            'title': '争议管辖公平性',
+            'content': '争议解决条款不宜显著增加一方维权成本。',
+            'source': '诉讼与仲裁条款审查要点',
+            'keywords': ['法院', '仲裁'],
+            'jurisdiction': 'CN',
+            'updated_at': '2026-03-29',
+        },
+    ]
+    path = tmp_path / 'knowledge_base.json'
+    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding='utf-8')
+    provider = LegalKnowledgeProvider(path)
+    service = RetrievalService(provider, top_k=2)
+
+    snippets = service.retrieve('unilateral_exemption', '甲方对任何损失均不承担责任，乙方不得追究。')
+
+    assert len(snippets) == 2
+    assert any(item.category == 'legal_basis' for item in snippets)
+    assert any(item.category != 'legal_basis' for item in snippets)
