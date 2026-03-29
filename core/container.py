@@ -2,8 +2,11 @@
 from dataclasses import dataclass
 
 from core.config import Settings, get_settings
+from core.security import PasswordHasher, TokenManager
 from repositories.review_repository import ReviewRepository
+from repositories.user_repository import UserRepository
 from services.analyzers.legal_knowledge_provider import LegalKnowledgeProvider
+from services.auth_service import AuthService
 from services.analyzers.prompt_analyzer import PromptAnalyzer
 from services.analyzers.retrieval_service import RetrievalService
 from services.analyzers.risk_analyzer import RiskAnalyzer
@@ -16,6 +19,7 @@ from services.parsers.image_parser import ImageParser
 from services.parsers.pdf_parser import PdfParser
 from services.parsers.text_parser import TextParser
 from services.rag.embedding_provider import SentenceTransformerEmbeddingProvider
+from services.report_exporter import ReviewExporter
 from services.rag.knowledge_index import KnowledgeVectorIndex
 from services.review_service import ReviewService
 from services.splitters.contract_splitter import ContractSplitter
@@ -27,6 +31,7 @@ class ApplicationContainer:
     """Top-level application dependencies."""
 
     settings: Settings
+    auth_service: AuthService
     review_service: ReviewService
 
 
@@ -36,7 +41,19 @@ def build_container(settings: Settings | None = None) -> ApplicationContainer:
     settings.ensure_directories()
 
     database = SQLiteDatabase(settings.database_path)
+    user_repository = UserRepository(database)
     review_repository = ReviewRepository(database)
+
+    password_hasher = PasswordHasher()
+    token_manager = TokenManager(
+        secret_key=settings.auth_secret_key,
+        ttl_minutes=settings.auth_token_ttl_minutes,
+    )
+    auth_service = AuthService(
+        user_repository=user_repository,
+        password_hasher=password_hasher,
+        token_manager=token_manager,
+    )
 
     parser_factory = DocumentParserFactory(
         parsers=[
@@ -74,12 +91,15 @@ def build_container(settings: Settings | None = None) -> ApplicationContainer:
         prompt_analyzer=prompt_analyzer,
     )
 
+    review_exporter = ReviewExporter()
+
     review_service = ReviewService(
         settings=settings,
         parser_factory=parser_factory,
         splitter=splitter,
         risk_analyzer=risk_analyzer,
         review_repository=review_repository,
+        review_exporter=review_exporter,
     )
 
-    return ApplicationContainer(settings=settings, review_service=review_service)
+    return ApplicationContainer(settings=settings, auth_service=auth_service, review_service=review_service)

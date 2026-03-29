@@ -12,6 +12,9 @@ class Settings(BaseSettings):
     app_name: str = "Contract Review Risk Agent"
     app_version: str = "0.1.0"
     debug: bool = False
+    app_timezone: str = "Asia/Shanghai"
+    auth_secret_key: str = "dev-secret-change-me"
+    auth_token_ttl_minutes: int = 480
 
     data_dir: Path = Path("data")
     database_path: Path = Path("data/reviews.db")

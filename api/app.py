@@ -6,6 +6,7 @@ from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
+from api.routes.auth import router as auth_router
 from api.routes.review import router as review_router
 from core.config import Settings, get_settings
 from core.container import build_container
@@ -26,6 +27,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         description="Minimal, testable contract review risk agent MVP.",
     )
     app.state.container = container
+    app.include_router(auth_router)
     app.include_router(review_router)
 
     static_dir = Path(__file__).resolve().parent.parent / "static"
@@ -38,6 +40,13 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         if index_file.exists():
             return FileResponse(index_file)
         return {"name": settings.app_name, "version": settings.app_version}
+
+    @app.get("/login", include_in_schema=False, response_model=None)
+    async def login_page():
+        login_file = static_dir / "login.html"
+        if login_file.exists():
+            return FileResponse(login_file)
+        return {"name": settings.app_name, "mode": "login"}
 
     @app.get("/lab", include_in_schema=False, response_model=None)
     async def lab():
