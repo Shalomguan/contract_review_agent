@@ -21,6 +21,8 @@ class ReviewRepository:
             "review_id": review.review_id,
             "document_id": review.document_id,
             "document_name": review.document_name,
+            "user_id": review.user_id,
+            "source_name": review.source_name,
             "summary": review.summary,
             "document_text": review.document_text,
             "created_at": review.created_at.isoformat(),
@@ -33,16 +35,18 @@ class ReviewRepository:
                 """
                 INSERT OR REPLACE INTO reviews (
                     review_id,
+                    user_id,
                     document_id,
                     document_name,
                     summary,
                     created_at,
                     risk_counts,
                     review_payload
-                ) VALUES (?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     review.review_id,
+                    review.user_id,
                     review.document_id,
                     review.document_name,
                     review.summary,
@@ -53,25 +57,25 @@ class ReviewRepository:
             )
             connection.commit()
 
-    def get(self, review_id: str) -> Review | None:
+    def get(self, user_id: str, review_id: str) -> Review | None:
         """Fetch one review by identifier."""
         with self.database.connect() as connection:
             row = connection.execute(
-                "SELECT review_payload FROM reviews WHERE review_id = ?",
-                (review_id,),
+                "SELECT review_payload FROM reviews WHERE review_id = ? AND user_id = ?",
+                (review_id, user_id),
             ).fetchone()
 
         if row is None:
             return None
         return self._hydrate_review(json.loads(row["review_payload"]))
 
-    def list(self, filters: ReviewListFilters | None = None, limit: int = 20, offset: int = 0) -> tuple[list[ReviewListItem], int]:
+    def list(self, user_id: str, filters: ReviewListFilters | None = None, limit: int = 20, offset: int = 0) -> tuple[list[ReviewListItem], int]:
         """List compact review records for history queries."""
         filters = filters or ReviewListFilters()
-        where_clause, params = self._build_list_filters(filters)
+        where_clause, params = self._build_list_filters(user_id, filters)
 
         query = [
-            "SELECT review_id, document_id, document_name, summary, created_at, risk_counts, review_payload",
+            "SELECT review_id, document_id, document_name, summary, created_at, risk_counts",
             "FROM reviews",
         ]
         if where_clause:
@@ -96,7 +100,6 @@ class ReviewRepository:
         items: list[ReviewListItem] = []
         for row in rows:
             risk_counts = json.loads(row["risk_counts"])
-            clause_title, clause_text = self._extract_history_clause(json.loads(row["review_payload"]))
             items.append(
                 ReviewListItem(
                     review_id=row["review_id"],
@@ -105,19 +108,18 @@ class ReviewRepository:
                     summary=self._normalize_summary(row["summary"], risk_counts),
                     created_at=datetime.fromisoformat(row["created_at"]),
                     risk_counts=risk_counts,
-                    clause_title=clause_title,
-                    clause_text=clause_text,
                 )
             )
         return items, int(total_row["total"] if total_row else 0)
 
-    def _build_list_filters(self, filters: ReviewListFilters) -> tuple[str, list[object]]:
-        clauses: list[str] = []
-        params: list[object] = []
+    def _build_list_filters(self, user_id: str, filters: ReviewListFilters) -> tuple[str, list[object]]:
+        clauses: list[str] = ["user_id = ?"]
+        params: list[object] = [user_id]
 
         if filters.document_name:
-            clauses.append("LOWER(document_name) LIKE ?")
-            params.append(f"%{filters.document_name.lower()}%")
+            clauses.append("(LOWER(document_name) LIKE ? OR LOWER(COALESCE(json_extract(review_payload, '$.source_name'), '')) LIKE ?)")
+            keyword = f"%{filters.document_name.lower()}%"
+            params.extend([keyword, keyword])
 
         if filters.date_from:
             clauses.append("created_at >= ?")
@@ -134,12 +136,12 @@ class ReviewRepository:
             return "", params
         return "WHERE " + " AND ".join(clauses), params
 
-    def delete(self, review_id: str) -> bool:
+    def delete(self, user_id: str, review_id: str) -> bool:
         """Delete one review by identifier."""
         with self.database.connect() as connection:
             cursor = connection.execute(
-                "DELETE FROM reviews WHERE review_id = ?",
-                (review_id,),
+                "DELETE FROM reviews WHERE review_id = ? AND user_id = ?",
+                (review_id, user_id),
             )
             connection.commit()
         return cursor.rowcount > 0
@@ -147,7 +149,7 @@ class ReviewRepository:
     def _hydrate_review(self, payload: dict) -> Review:
         risks = []
         for item in payload["risks"]:
-            references = [RiskReference(**reference) for reference in item.get("references", [])]
+            references = [RiskReference(category='review_rule', **reference) if 'category' not in reference else RiskReference(**reference) for reference in item.get("references", [])]
             risks.append(
                 RiskAnalysis(
                     clause_id=item["clause_id"],
@@ -167,11 +169,31 @@ class ReviewRepository:
             document_id=payload["document_id"],
             document_name=payload["document_name"],
             summary=self._normalize_summary(payload["summary"], self._count_risks(risks)),
-            document_text=payload.get("document_text", ""),
+            document_text=self._normalize_document_text(payload, risks),
             risks=risks,
             created_at=datetime.fromisoformat(payload["created_at"]),
+            source_name=payload.get("source_name"),
+            user_id=payload.get("user_id", ""),
         )
 
+    def _normalize_document_text(self, payload: dict, risks: list[RiskAnalysis]) -> str:
+        document_text = (payload.get("document_text") or "").strip()
+        if document_text:
+            return document_text
+
+        unique_clauses: list[str] = []
+        seen: set[str] = set()
+        for risk in risks:
+            clause_text = (risk.clause_text or "").strip()
+            if not clause_text or clause_text in seen:
+                continue
+            seen.add(clause_text)
+            unique_clauses.append(clause_text)
+
+        if not unique_clauses:
+            return ""
+
+        return "历史记录缺少完整合同原文，以下为当时命中的条款内容：\n\n" + "\n\n".join(unique_clauses)
     def _normalize_summary(self, summary: str, risk_counts: dict[str, int]) -> str:
         if not self._looks_garbled(summary):
             return summary
@@ -185,14 +207,6 @@ class ReviewRepository:
             + f"medium {risk_counts.get('medium', 0)} 个，"
             + f"low {risk_counts.get('low', 0)} 个。"
         )
-
-    def _extract_history_clause(self, payload: dict) -> tuple[str | None, str | None]:
-        risks = payload.get("risks") or []
-        if not risks:
-            return None, None
-
-        first_risk = risks[0]
-        return first_risk.get("clause_title"), first_risk.get("clause_text")
 
     def _looks_garbled(self, summary: str) -> bool:
         if not summary:

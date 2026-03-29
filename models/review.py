@@ -43,6 +43,7 @@ class RiskReference:
     title: str
     source: str
     content: str
+    category: str = 'review_rule'
 
 
 @dataclass(slots=True)
@@ -66,12 +67,14 @@ class Review:
     """A persisted contract review result."""
 
     review_id: str
+    user_id: str
     document_id: str
     document_name: str
     summary: str
     document_text: str
     risks: list[RiskAnalysis]
     created_at: datetime
+    source_name: str | None = None
 
 
 @dataclass(slots=True)
@@ -84,8 +87,6 @@ class ReviewListItem:
     summary: str
     created_at: datetime
     risk_counts: dict[str, int]
-    clause_title: str | None = None
-    clause_text: str | None = None
 
 
 @dataclass(slots=True)

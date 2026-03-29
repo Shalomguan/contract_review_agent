@@ -26,6 +26,7 @@ class RiskReferenceResponse(BaseModel):
     title: str
     source: str
     content: str
+    category: str
 
     @classmethod
     def from_domain(cls, reference: RiskReference) -> "RiskReferenceResponse":
@@ -33,6 +34,7 @@ class RiskReferenceResponse(BaseModel):
             title=reference.title,
             source=reference.source,
             content=reference.content,
+            category=reference.category,
         )
 
 
@@ -99,8 +101,6 @@ class ReviewListItemResponse(BaseModel):
     summary: str
     created_at: datetime
     risk_counts: dict[str, int]
-    clause_title: str | None = None
-    clause_text: str | None = None
 
     @classmethod
     def from_domain(cls, item: ReviewListItem) -> "ReviewListItemResponse":
@@ -111,8 +111,6 @@ class ReviewListItemResponse(BaseModel):
             summary=item.summary,
             created_at=item.created_at,
             risk_counts=item.risk_counts,
-            clause_title=item.clause_title,
-            clause_text=item.clause_text,
         )
 
 
